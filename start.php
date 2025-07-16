@@ -39,8 +39,9 @@ class myResolver implements ResolverInterface
         $answers = [] ;
         $resolveInternal = false ;
         foreach ($queries as $query) {
+            /** @var ResourceRecord $query */
             var_dump($query->getName());
-            if ($query->getName() === "david.") {
+            if (true) { // $query->getName() === "david.") {
                 // If the query is for "david", return the answer
 
                 $resolveInternal = true ;
@@ -52,18 +53,42 @@ class myResolver implements ResolverInterface
                 $factory = new React\Dns\Resolver\Factory();
                 $dns = $factory->create($config);
 
-                $dns->resolve('google.fr')->then(function ($ip) use ($answers,$deferred) {
-                    echo "Host: $ip\n";
+                //if ($query->getType() ==
+                $host = "google.fr" ;
+                $host = substr($query->getName(),0,-1);
+                var_dump("TYPE:". $query->getType());
 
-                    $answers[] =  (new ResourceRecord())
+                if ($host == 'david')
+                {
+                    $answers[] = (new ResourceRecord())
                         ->setQuestion(false)
                         ->setTtl(1)
                         ->setType(RecordTypeEnum::TYPE_A)
-                        ->setName("david")
-                        ->setRdata($ip);
+                        ->setName($host)
+                        ->setRdata('6.6.6.6');
 
                     $deferred->resolve($answers);
-                });
+                }
+                else {
+                    if ($query->getType() !== 1)
+                        $deferred->reject(new RefusedTypeException("Unsupported type"));
+                    else {
+                        $dns->resolve($host)->then(function ($ip) use ($answers, $deferred, $host) {
+                            echo "Host: $ip\n";
+
+                            //$host = "david" ;
+
+                            $answers[] = (new ResourceRecord())
+                                ->setQuestion(false)
+                                ->setTtl(1)
+                                ->setType(RecordTypeEnum::TYPE_A)
+                                ->setName($host)
+                                ->setRdata($ip);
+
+                            $deferred->resolve($answers);
+                        });
+                    }
+                }
 
 
             }
