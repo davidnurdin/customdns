@@ -1,0 +1,16 @@
+{
+    "name": "catferq/reactphp-dns-server",
+    "description": "Simple DNS server implementation",
+    "version": "1.0.0",
+    "license": "MIT",
+    "require": {
+        "php": "~8.1",
+        "react/socket": "~1.2",
+        "react/datagram": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "CatFerq\\ReactPHPDNS\\": "src/"
+        }
+    }
+}

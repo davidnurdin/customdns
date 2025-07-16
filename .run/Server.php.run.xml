@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Server.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" path="$PROJECT_DIR$/src/Server.php">
+    <CommandLine parameters="-n">
+      <PhpTestInterpreterSettings>
+        <option name="interpreterName" value="$USER_HOME$/phproot8.4" />
+      </PhpTestInterpreterSettings>
+    </CommandLine>
+    <method v="2" />
+  </configuration>
+</component>
