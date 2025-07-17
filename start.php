@@ -155,7 +155,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
     {
         $context = stream_context_create(array(
             'socket' => array(
-                'backlog' => -1, // default backlog
+                'backlog' => 0, // default backlog
                 'so_reuseport' => true, // enable SO_REUSEPORT
             )
         ));
