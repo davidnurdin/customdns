@@ -7,11 +7,17 @@
         "php": "~8.1",
         "react/socket": "~1.2",
         "react/datagram": "^1.4",
-        "clue/docker-react": "^1.5"
+        "clue/docker-react" : "dev-main"
     },
     "autoload": {
         "psr-4": {
             "CatFerq\\ReactPHPDNS\\": "src/"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/RespawnsiveWeb/reactphp-docker"
+        }
+    ]
 }
