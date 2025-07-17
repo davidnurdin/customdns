@@ -1,10 +1,11 @@
+# docker run -it --rm --name customdns -p 172.17.0.1:53:53/udp davidnurdin/customdns
 networks:
   test-network:
 
 services:
     test-service:
         image: debian:latest
-        command: ["sh", "-c", "echo 'Hello, World!' && sleep 3600"]
+        command: ["sh", "-c", "echo 'Hello, World!' && sleep 360000"]
         networks:
         - test-network
         deploy:
@@ -12,3 +13,12 @@ services:
           restart_policy:
               condition: on-failure
 
+    customdns:
+        image: davidnurdin/customdns
+        networks:
+            - test-network
+#        deploy:
+#          mode: replicated
+#          replicas: 1
+        ports:
+          - "172.17.0.1:53:53/udp"
