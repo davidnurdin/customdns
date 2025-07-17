@@ -6,7 +6,8 @@
     "require": {
         "php": "~8.1",
         "react/socket": "~1.2",
-        "react/datagram": "^1.4"
+        "react/datagram": "^1.4",
+        "clue/docker-react": "^1.5"
     },
     "autoload": {
         "psr-4": {

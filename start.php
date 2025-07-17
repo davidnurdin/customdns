@@ -19,6 +19,72 @@ include 'src/Resolvers/ResolverInterface.php';
 // autoload
 include 'vendor/autoload.php';
 
+
+$client = new Clue\React\Docker\Client();
+
+$client->serviceList()->then(function (array $services) use ($client) {
+    foreach ($services as $service)
+    {
+        $client->taskList($service['ID'])->then(function (array $tasks) use ($service,$client) {
+            echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
+//            echo "Tasks: " . count($tasks) . PHP_EOL;
+
+            foreach ($tasks as $task) {
+//                echo "=========> Task ID: " . $task['ID'] . PHP_EOL;
+
+                $client->taskInspect($task['ID'])->then(function (array $taskDetails) {
+
+                    if (isset($taskDetails['NetworksAttachments'][0]['Addresses'])) {
+                        if ($taskDetails['DesiredState'] == 'running') {
+                            var_dump($taskDetails['NetworksAttachments'][0]['Addresses']);
+//                            var_dump($taskDetails['DesiredState']);
+                        }
+
+                    }
+
+                })->otherwise(function (Exception $e) {
+                    echo 'Error inspecting task: ' . $e->getMessage() . PHP_EOL;
+                });
+
+
+                echo "Status: " . $task['Status']['State'] . PHP_EOL;
+                echo "Node: " . $task['NodeID'] . PHP_EOL;
+                echo PHP_EOL;
+            }
+        })->otherwise(function (Exception $e) {
+            echo 'Error listing tasks: ' . $e->getMessage() . PHP_EOL;
+        });
+
+
+        $client->serviceInspect($service['ID'])->then(function (array $serviceDetails) {
+        //    var_dump($serviceDetails);
+
+            echo PHP_EOL;
+        })->otherwise(function (Exception $e) {
+            echo 'Error inspecting service: ' . $e->getMessage() . PHP_EOL;
+        });
+
+    }
+}, function (Exception $e) {
+    echo 'Error: ' . $e->getMessage() . PHP_EOL;
+});
+
+
+//$client->containerInspect('symfony-docker-php-1')->then(function (array $container) {
+//    var_dump($container);
+//}, function (Exception $e) {
+//    echo 'Error: ' . $e->getMessage() . PHP_EOL;
+//});
+
+
+//$client->imageSearch('davidnurdin')->then(function (array $images) {
+//    var_dump($images);
+//}, function (Exception $e) {
+//    echo 'Error: ' . $e->getMessage() . PHP_EOL;
+//});
+
+
+
 class myResolver implements ResolverInterface
 {
 
@@ -43,7 +109,8 @@ class myResolver implements ResolverInterface
         foreach ($queries as $query) {
             /** @var ResourceRecord $query */
             var_dump($query->getName());
-            if (true) { // $query->getName() === "david.") {
+            // if (true) {
+            if ($query->getName() === "david.") {
                 // If the query is for "david", return the answer
 
                 $resolveInternal = true ;

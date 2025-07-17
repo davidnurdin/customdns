@@ -1,0 +1,14 @@
+networks:
+  test-network:
+
+services:
+    test-service:
+        image: debian:latest
+        command: ["sh", "-c", "echo 'Hello, World!' && sleep 3600"]
+        networks:
+        - test-network
+        deploy:
+          replicas: 2
+          restart_policy:
+              condition: on-failure
+
