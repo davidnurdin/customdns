@@ -22,13 +22,14 @@ class Server
         private readonly ResolverInterface $resolver,
         private readonly string            $ip = '0.0.0.0',
         private readonly int               $port = 53,
-        private ?LoopInterface             $loop = null
+        private ?LoopInterface             $loop = null,
+        $context = null,
     )
     {
         $this->loop ??= Loop::get();
 
-        $factory = new Factory($this->loop);
-        $factory->createServer($this->ip . ':' . $this->port)->then(function (Socket $server) {
+        $factory = new \FactoryExtended($this->loop);
+        $factory->createServer($this->ip . ':' . $this->port,$context)->then(function (Socket $server) {
             $server->on('message', [$this, 'onMessage']);
         })->otherwise(function (\Exception $exception) {
             echo $exception->getMessage();

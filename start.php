@@ -7,6 +7,8 @@ use CatFerq\ReactPHPDNS\Exceptions\UnsupportedTypeException;
 use CatFerq\ReactPHPDNS\Resolvers\ResolverInterface;
 use CatFerq\ReactPHPDNS\Services\Decoder;
 use CatFerq\ReactPHPDNS\Services\Encoder;
+use React\Datagram\Factory;
+use React\Datagram\Socket;
 use React\Datagram\SocketInterface;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
@@ -57,6 +59,8 @@ class myResolver implements ResolverInterface
                 $host = "google.fr" ;
                 $host = substr($query->getName(),0,-1);
                 var_dump("TYPE:". $query->getType());
+
+                // $dns->resolveAll ??
 
                 if ($host == 'david')
                 {
@@ -125,12 +129,38 @@ class RefusedTypeException extends \Exception
 {
 
 }
+
+class FactoryExtended extends Factory
+{
+    public function createServer($address,$context = null)
+    {
+        $loop = $this->loop;
+
+        return $this->resolveAddress($address)->then(function ($address) use ($loop,$context) {
+            $socket = @\stream_socket_server($address, $errno, $errstr, \STREAM_SERVER_BIND,$context);
+
+            if (!$socket) {
+                throw new Exception('Unable to create server socket: ' . $errstr, $errno);
+            }
+
+            return new Socket($loop, $socket);
+        });
+    }
+
+}
 class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 {
 
     public function __construct(private ResolverInterface $resolver, string $ip = '0.0.0.0', int $port = 53, ?\React\EventLoop\LoopInterface $loop = null)
     {
-        parent::__construct($resolver, $ip, $port, $loop);
+        $context = stream_context_create(array(
+            'socket' => array(
+                'backlog' => -1, // default backlog
+                'so_reuseport' => true, // enable SO_REUSEPORT
+            )
+        ));
+
+        parent::__construct($resolver, $ip, $port, $loop,$context);
     }
 
     public function onMessage(string $message, string $address, SocketInterface $socket): void
