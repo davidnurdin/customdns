@@ -1,0 +1,6 @@
+- si un container du swarm interroge 172.17.0.1 , via tasksActive. il a acces a tout les service name du swarm qui sont interrogé , c est problematique
+==> solution : il faudrais regarder la "source" de la requete dns , regarder les relations et autorisé que les network communs
+- decoupler/utilisé cache l'interogation docker/la requete dns
+- avoir un tasksActive.all/[node1/2/3].service plutot
+- pouvoir specifié une URL de configuration pour le test de filtrage (sql/keydb/autre?) ca serai du php
+
