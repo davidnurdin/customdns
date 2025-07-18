@@ -1,3 +1,12 @@
+- probleme comment faire le test de connectivité depuis le container (qui a certe le network host + l'acces docker , mais n'arrive pas a acceder directement)
+(j'était persuadé qu'on arrivais a acceder avec l'ip local du host, mais non)
+===> piste (ouvrir un container sur le meme reseau, en cas de multiple réseau?): docker run --rm -it --network container:2389ec859e0b nicolaka/netshoot telnet localhost 3306
+===> avoir 1 customDns par service ? on en aurai 1 pour keydb , 1 pour mysql, 1 pour redis, etc...) => mais je pense qu'on pourra pas a cause de l'ip local du host 172.xxx
+===> avoir N container bridges qui fait les test de connectivité et qui renvoi les réponses (les lancer via docker run, via la socket docker..sur un port aléatoire et qu'il fasse un socat!)
+==> trouver pour acceder depuis le host.
+
+
+
 - si un container du swarm interroge 172.17.0.1 , via tasksActive. il a acces a tout les service name du swarm qui sont interrogé , c est problematique
 ==> solution : il faudrais regarder la "source" de la requete dns , regarder les relations et autorisé que les network communs
 - decoupler/utilisé cache l'interogation docker/la requete dns
@@ -6,3 +15,5 @@
 - documenter comment utiliser le customdns dans les containers
 - donner une priorité aux containers qui ont un network commun
 - renvoyer toutes les réponses (answer) a 1 question (pas juste 1 seul)
+- enlever les variable globale les encapsulé dans ServerExtended
+- SI on demande un service qui n'existe pas, renvoyer une erreur NXDOMAIN not exist

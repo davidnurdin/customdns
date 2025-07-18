@@ -22,8 +22,8 @@ class Server
         private readonly ResolverInterface $resolver,
         private readonly string            $ip = '0.0.0.0',
         private readonly int               $port = 53,
-        private ?LoopInterface             $loop = null,
-        $context = null,
+        protected ?LoopInterface           $loop = null,
+                                           $context = null,
     )
     {
         $this->loop ??= Loop::get();

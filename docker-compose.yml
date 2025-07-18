@@ -9,23 +9,25 @@ networks:
 services:
     test-service:
         image: debian:latest
-        command: ["sh", "-c", "echo 'Hello, World!' && sleep 360000"]
+        command: ["sh", "-c", "apt-get update && apt-get install -y netcat-traditional && while true; do if [ $((RANDOM % 2)) -eq 0 ]; then echo 'AAAAAAAAAAAAAAAAAAAAAAAA'; fi | nc -l -p 3306; done"]
         networks:
-        - test-network
+          - test-network
+        ports:
+          - "3306"
         deploy:
           replicas: 3
           restart_policy:
               condition: on-failure
 
-    customdns:
-        image: davidnurdin/customdns:latest
-        volumes:
-          - type: bind
-            source: /var/run/docker.sock
-            target: /var/run/docker.sock
-        networks:
-          - host
-        deploy:
-          mode: global  # un container par host
-          restart_policy:
-            condition: any
+#    customdns:
+#        image: davidnurdin/customdns:latest
+#        volumes:
+#          - type: bind
+#            source: /var/run/docker.sock
+#            target: /var/run/docker.sock
+#        networks:
+#          - host
+#        deploy:
+#          mode: global  # un container par host
+#          restart_policy:
+#            condition: any
