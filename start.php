@@ -220,6 +220,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
     public function __construct(private ResolverInterface $resolver, string $ip = '0.0.0.0', int $port = 53, ?\React\EventLoop\LoopInterface $loop = null)
     {
+        if (isset($_SERVER['argv'][1]))
+            $ip = $_SERVER['argv'][1] ;
+
+        if (isset($_SERVER['argv'][2]))
+            $port = $_SERVER['argv'][2] ;
+
         $context = stream_context_create(array(
             'socket' => array(
                 'so_reuseport' => true, // enable SO_REUSEPORT
