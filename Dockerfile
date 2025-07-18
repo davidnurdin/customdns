@@ -6,5 +6,5 @@ WORKDIR /app
 # copy all files from the current directory to /app in the container
 COPY . /app
 
-ENTRYPOINT ["/usr/local/bin/php","start.php"]
+ENTRYPOINT ["/usr/local/bin/php","start.php","172.17.0.1"]
 

@@ -18,7 +18,7 @@ services:
               condition: on-failure
 
     customdns:
-        image: davidnurdin/customdns
+        image: davidnurdin/customdns:latest
         networks:
           - host
         deploy:
