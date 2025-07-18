@@ -3,4 +3,6 @@
 - decoupler/utilisé cache l'interogation docker/la requete dns
 - avoir un tasksActive.all/[node1/2/3].service plutot
 - pouvoir specifié une URL de configuration pour le test de filtrage (sql/keydb/autre?) ca serai du php
-
+- documenter comment utiliser le customdns dans les containers
+- donner une priorité aux containers qui ont un network commun
+- renvoyer toutes les réponses (answer) a 1 question (pas juste 1 seul)
