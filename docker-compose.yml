@@ -1,6 +1,10 @@
 # docker run -it --rm --name customdns -p 172.17.0.1:53:53/udp davidnurdin/customdns
 networks:
   test-network:
+  host:
+    name: "host"
+    external: true
+
 
 services:
     test-service:
@@ -9,16 +13,13 @@ services:
         networks:
         - test-network
         deploy:
-          replicas: 2
+          replicas: 3
           restart_policy:
               condition: on-failure
 
     customdns:
         image: davidnurdin/customdns
         networks:
-            - test-network
-#        deploy:
-#          mode: replicated
-#          replicas: 1
-        ports:
-          - "172.17.0.1:53:53/udp"
+          - host
+        deploy:
+          mode: global  # un container par host
