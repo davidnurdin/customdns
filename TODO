@@ -42,11 +42,19 @@ docker network connect <nom_du_reseau> <nom_du_conteneur>
 docker network disconnect <nom_du_reseau> <nom_du_conteneur>
 
 
+depuis host : sudo socat - UNIX-CONNECT:./dns-helper/helper.sock 
+
+docker network connect test_test-network test_dns-helper.km9oevn9qvs6pyflqxogmsa6n.at303cm9zhxu2ikr4oklsmecs 
+
+
 la communication pour me connecté à l'ip depuis customdns : (a adapté en reactphp)
 
 $socket = stream_socket_client("unix:///var/run/dns-helper.sock", $errno, $errstr, 1);
 fwrite($socket, "TEST 10.0.1.5:8080\n");
 $response = fgets($socket);
+
+sudo echo "TEST 10.0.0.2:8080" | sudo socat - UNIX-CONNECT:./dns-helper/helper.sock
+
 
 
 et là ... on se retrouve connecté !

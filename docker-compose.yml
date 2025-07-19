@@ -1,6 +1,7 @@
 # docker run -it --rm --name customdns -p 172.17.0.1:53:53/udp davidnurdin/customdns
 networks:
   test-network:
+  helper:
   host:
     name: "host"
     external: true
@@ -9,7 +10,7 @@ networks:
 services:
     test-service:
         image: debian:latest
-        command: ["sh", "-c", "apt-get update && apt-get install -y netcat-traditional && while true; do if [ $((RANDOM % 2)) -eq 0 ]; then echo 'AAAAAAAAAAAAAAAAAAAAAAAA'; fi | nc -l -p 3306; done"]
+        command: ["sh", "-c", "apt-get update && apt-get install -y netcat-traditional && while true; do if [ $$((RANDOM % 2)) -eq 0 ]; then echo 'AAAAAAAAAAAAAAAAAAAAAAAA'; fi | nc -l -p 3306; done"]
         networks:
           - test-network
         ports:
@@ -18,6 +19,24 @@ services:
           replicas: 3
           restart_policy:
               condition: on-failure
+
+    dns-helper:
+      image: debian:stable-slim
+      entrypoint: ["/bin/bash"]
+      command:
+        - "-eucx"
+        - |
+          apt-get update
+          apt-get install -y socat microsocks
+          rm -f /var/run/dns-helper/helper.sock
+          microsocks -p 1080 -i 127.0.0.1 &
+          exec socat UNIX-LISTEN:/var/run/dns-helper/helper.sock,fork TCP:127.0.0.1:1080
+      networks:
+        - helper
+      volumes:
+        - ./dns-helper:/var/run/dns-helper
+      deploy:
+        mode: global  # un container par host
 
 #    customdns:
 #        image: davidnurdin/customdns:latest

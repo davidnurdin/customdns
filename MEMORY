@@ -1,0 +1,2 @@
+depuis le host : sudo socat TCP-LISTEN:9998,fork UNIX-CONNECT:./dns-helper/helper.sock 
+curl --socks5-hostname localhost:9998 http://www.google.fr
