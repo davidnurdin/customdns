@@ -13,6 +13,45 @@ ce qui fonctionne :
 => donne accès au meme network que le service qu'on cherche à tester ! (il faut recupéré le container de l'host en cours)
 => on dois pouvoir faire ça via la socket unix => puis se connecter dedans => puis faire notre commande
 
+---------------------
+
+IDEE OK :
+
+services:
+  dnsproxy:
+    image: ton/dnsproxy
+    network_mode: "host"
+    volumes:
+      - /var/run/dns-helper.sock:/var/run/dns-helper.sock
+
+  dns-helper:
+    image: alpine
+    command: ["sh", "-c", "apk add curl && nc -lU /var/run/dns-helper.sock"]
+    networks:
+      - default
+    volumes:
+      - /var/run/dns-helper.sock:/var/run/dns-helper.sock
+
+
+on crée un dns helper (en deploy x 3 aussi) , qui rejoindra dynamiquement le réseau demandé par le customdns
+
+=> les 2 communique via une socket unix (qui est un serveur SOCKS d'ailleur sur le helper) (la socks etant sur le host commun)
+=> customDns peur faire joindre au dns helper des réseau dynamiquement via (voir api):
+
+docker network connect <nom_du_reseau> <nom_du_conteneur>
+docker network disconnect <nom_du_reseau> <nom_du_conteneur>
+
+
+la communication pour me connecté à l'ip depuis customdns : (a adapté en reactphp)
+
+$socket = stream_socket_client("unix:///var/run/dns-helper.sock", $errno, $errstr, 1);
+fwrite($socket, "TEST 10.0.1.5:8080\n");
+$response = fgets($socket);
+
+
+et là ... on se retrouve connecté !
+
+todo : verifié si /var/run/dns-helper permet plusieurs connexion (normalement oui)
 ---
 autre piste => crée dans la stack du customdns => 1 service supplémentaire qu'on veux testé avec le network (et spécifié son nom en _env dans customdns)
 
