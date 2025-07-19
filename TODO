@@ -6,6 +6,16 @@
 ==> trouver pour acceder depuis le host.
 
 
+ce qui fonctionne :
+
+ docker run -it --rm --network container:galera10-6_node.1.jth8hrfu9ib2xlisqgkibmold debian
+
+=> donne accès au meme network que le service qu'on cherche à tester ! (il faut recupéré le container de l'host en cours)
+=> on dois pouvoir faire ça via la socket unix => puis se connecter dedans => puis faire notre commande
+
+---
+autre piste => crée dans la stack du customdns => 1 service supplémentaire qu'on veux testé avec le network (et spécifié son nom en _env dans customdns)
+
 
 - si un container du swarm interroge 172.17.0.1 , via tasksActive. il a acces a tout les service name du swarm qui sont interrogé , c est problematique
 ==> solution : il faudrais regarder la "source" de la requete dns , regarder les relations et autorisé que les network communs
