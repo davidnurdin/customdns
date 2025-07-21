@@ -19,12 +19,7 @@ services:
       command:
         - "-eucx"
         - |
-          cat > /etc/resolv.conf <<EOF
-          nameserver 172.17.0.1
-          nameserver 127.0.0.11
-          search .
-          options ndots:0
-          EOF          
+          printf 'nameserver 172.17.0.1\nnameserver 127.0.0.11\nsearch .\noptions ndots:0\n' > /etc/resolv.conf
           apt-get update
           apt-get install -y procps telnet dnsutils inetutils-ping
           exec sleep infinity
