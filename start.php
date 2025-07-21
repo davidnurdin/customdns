@@ -264,9 +264,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     $deferred = new \React\Promise\Deferred();
                     $loop = $this->loop ?? \React\EventLoop\Loop::get();
 
-                    /*
-                    $connector = new \React\Socket\Connector($loop);
-
                     $timeout = $this->timeout ?? 1.0; // Default timeout is 1 second, can be set as property
                     $timedOut = false;
                     echo "Attempting to connect to {$ip['ip']}:3306 with timeout {$timeout}s" . PHP_EOL;
@@ -275,68 +272,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         echo "Connection to {$ip['ip']}:3306 timed out." . PHP_EOL;
                         $deferred->resolve(false);
                     });
-
-                    $connector->connect('tcp://' . $ip['ip'] . ':3306')->then(
-                        function (\React\Socket\ConnectionInterface $connection) use ($deferred, &$timer, &$timedOut, $loop, $ip) {
-                            if ($timedOut) {
-                                $connection->close();
-                                return;
-                            }
-                            $buffer = '';
-                            $connection->on('data', function ($data) use (&$buffer, $connection, $deferred, &$timer, $loop, &$timedOut, $ip) {
-                                if ($timedOut) {
-                                    $connection->close();
-                                    return;
-                                }
-                                $buffer .= $data;
-                                if (strlen($buffer) > 5) {
-                                    if (isset($timer)) {
-                                        $loop->cancelTimer($timer);
-                                    }
-                                    echo "Received data from {$ip['ip']}:3306, connection successful." . PHP_EOL;
-                                    $connection->close();
-                                    $deferred->resolve(true);
-                                }
-                            });
-                            $connection->on('close', function () use (&$buffer, $deferred, &$timer, $loop, &$timedOut, $ip) {
-                                if ($timedOut) {
-                                    return;
-                                }
-                                if (isset($timer)) {
-                                    $loop->cancelTimer($timer);
-                                }
-                                if (strlen($buffer) > 5) {
-                                    echo "Connection to {$ip['ip']}:3306 closed after receiving data." . PHP_EOL;
-                                    $deferred->resolve(true);
-                                } else {
-                                    echo "Connection to {$ip['ip']}:3306 closed without enough data." . PHP_EOL;
-                                    $deferred->resolve(false);
-                                }
-                            });
-                            $connection->on('error', function () use ($deferred, &$timer, $loop, &$timedOut, $ip) {
-                                if ($timedOut) {
-                                    return;
-                                }
-                                if (isset($timer)) {
-                                    $loop->cancelTimer($timer);
-                                }
-                                echo "Error connecting to {$ip['ip']}:3306." . PHP_EOL;
-                                $deferred->resolve(false);
-                            });
-                        },
-                        function () use ($deferred, &$timer, $loop, &$timedOut, $ip) {
-                            if ($timedOut) {
-                                return;
-                            }
-                            if (isset($timer)) {
-                                $loop->cancelTimer($timer);
-                            }
-                            echo "Failed to connect to {$ip['ip']}:3306." . PHP_EOL;
-                            $deferred->resolve(false);
-                        }
-                    );
-*/
-
 
 
                     $connector = new Connector([
