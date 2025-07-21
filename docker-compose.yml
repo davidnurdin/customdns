@@ -3,7 +3,7 @@ volumes:
   socketShare:
 
 networks:
-  test-network:
+  test-network-mysql:
   helper:
   host:
     name: "host"
@@ -11,18 +11,34 @@ networks:
 
 
 services:
-    test-service:
+    test-web:
+      image: debian:test
+      networks:
+        - test-network-mysql
+      dns:
+        - 172.17.0.1
+        - 127.0.0.11
+      command:
+        - "-eucx"
+        - |
+          apt-get update
+          apt-get install -y procps telnet dnsutils inetutils-ping
+          exec sleep infinity
+      deploy:
+        replicas: 3
+        restart_policy:
+          condition: on-failure
+    test-mysql:
         image: debian:latest
         command: ["sh", "-c", "apt-get update && apt-get install -y netcat-traditional && while true; do if [ $$((RANDOM % 2)) -eq 0 ]; then echo 'AAAAAAAAAAAAAAAAAAAAAAAA'; fi | nc -l -p 3306; done"]
         networks:
-          - test-network
+          - test-network-mysql
         ports:
           - "3306"
         deploy:
           replicas: 3
           restart_policy:
               condition: on-failure
-
     dns-helper:
       image: debian:stable-slim
       entrypoint: ["/bin/bash"]
