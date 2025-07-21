@@ -12,6 +12,7 @@ networks:
 
 services:
     test-web:
+      # to test : dig tasksActive.all.dns_test-mysql
       image: debian:latest
       networks:
         - test-network-mysql
