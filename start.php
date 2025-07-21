@@ -17,6 +17,7 @@ use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
+use React\Socket\Connector;
 
 include 'src/Server.php';
 include 'src/Resolvers/ResolverInterface.php';
@@ -262,6 +263,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     // INSERT_YOUR_CODE
                     $deferred = new \React\Promise\Deferred();
                     $loop = $this->loop ?? \React\EventLoop\Loop::get();
+
+                    /*
                     $connector = new \React\Socket\Connector($loop);
 
                     $timeout = $this->timeout ?? 1.0; // Default timeout is 1 second, can be set as property
@@ -332,8 +335,68 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             $deferred->resolve(false);
                         }
                     );
+*/
+
+
+
+                    $connector = new Connector([
+                        'unix' => true,
+                    ]);
+
+                    $unixSocketPath = '/var/run/dns-helper/helper.sock';
+                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop) {
+                        echo "Connecté à la socket Unix SOCKS5\n";
+
+                        // Étape 1 : Négociation SOCKS5 (no auth)
+                        $proxy->write("\x05\x01\x00");
+
+                        $proxy->once('data', function ($data) use ($proxy) {
+                            if ($data !== "\x05\x00") {
+                                echo "Proxy SOCKS5 : méthode non supportée ou erreur\n";
+                                return;
+                            }
+
+                            echo "Méthode d'auth OK, envoi de la requête de connexion...\n";
+
+                            // Étape 2 : Demande de connexion à www.google.fr:80
+                            $addr = 'www.google.fr';
+                            $port = 80;
+
+                            $addrBytes = chr(strlen($addr)) . $addr;
+                            $portBytes = pack('n', $port);
+
+                            $request = "\x05\x01\x00\x03" . $addrBytes . $portBytes;
+                            $proxy->write($request);
+
+                            $proxy->once('data', function ($data) use ($proxy) {
+                                if (strlen($data) < 2 || $data[1] !== "\x00") {
+                                    echo "Connexion refusée ou erreur SOCKS5\n";
+                                    return;
+                                }
+
+                                echo "Connexion à www.google.fr:80 établie via SOCKS5\n";
+
+                                // Étape 3 : Envoi de la requête HTTP GET
+                                $httpRequest = "GET / HTTP/1.1\r\nHost: www.google.fr\r\nConnection: close\r\n\r\n";
+                                $proxy->write($httpRequest);
+
+                                $proxy->on('data', function ($chunk) {
+                                    echo $chunk;
+                                });
+
+                                $proxy->on('close', function () {
+                                    echo "\nConnexion fermée\n";
+                                });
+                            });
+                        });
+                    }, function (Exception $e) {
+                        echo "Échec de connexion à la socket Unix : " . $e->getMessage() . "\n";
+                    });
+
+
 
                     return $deferred->promise()->then(function ($canBeJoin) use ($ip) {
+                        $canBeJoin =  (bool)rand(0,1); ; // TODO enlever
                         $ip['canBeJoin'] = $canBeJoin;
                         return $ip;
                     });

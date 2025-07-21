@@ -43,14 +43,6 @@ services:
 
     customdns:
         image: davidnurdin/customdns:latest
-        entrypoint: [ "/bin/bash" ]
-        command:
-          - "-eucx"
-          - |
-            apt-get update
-            apt-get install -y socat
-            socat TCP4-LISTEN:9998,bind=127.0.0.1,fork UNIX-CONNECT:/var/run/dns-helper/helper.sock &
-            exec /usr/local/bin/php start.php 172.17.0.1
         volumes:
           - type: bind
             source: /var/run/docker.sock
