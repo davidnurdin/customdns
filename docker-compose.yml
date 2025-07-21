@@ -38,15 +38,18 @@ services:
       deploy:
         mode: global  # un container par host
 
-#    customdns:
-#        image: davidnurdin/customdns:latest
-#        volumes:
-#          - type: bind
-#            source: /var/run/docker.sock
-#            target: /var/run/docker.sock
-#        networks:
-#          - host
-#        deploy:
-#          mode: global  # un container par host
-#          restart_policy:
-#            condition: any
+    customdns:
+        image: davidnurdin/customdns:latest
+        volumes:
+          - type: bind
+            source: /var/run/docker.sock
+            target: /var/run/docker.sock
+          - type: bind
+            source: /var/run/dns-helper/helper.sock
+            target: /var/run/dns-helper/helper.sock
+        networks:
+          - host
+        deploy:
+          mode: global  # un container par host
+          restart_policy:
+            condition: any
