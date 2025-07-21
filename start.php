@@ -438,21 +438,27 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                             if ($service['Spec']['Name'] == $serviceName) {
                                 echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
+
+                                // filter task get only Running AND have Addresses
+                                $tasks = array_filter($tasks, function ($task) {
+                                    return $task['Status']['State'] == 'running' && isset($task['NetworksAttachments'][0]['Addresses']);
+                                });
+
+
                                 $nbTasks = count($tasks);
                                 $_CACHE[$data['infos']['domain']]['nbTasksResolv'] = 0 ;
                                 foreach ($tasks as $task) {
                                     $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, $nbTasks, &$_CACHE, &$_TORESEND) {
                                         var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
+                                        // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
                                         $_CACHE[$data['infos']['domain']]['nbTasksResolv']++ ;
-
-                                        if (isset($taskDetails['NetworksAttachments'][0]['Addresses'])) {
-                                            if ($taskDetails['Status']['State'] == 'running') {
-                                                $ipRange = $taskDetails['NetworksAttachments'][0]['Addresses'];
-                                                $ip = explode('/', $ipRange[0])[0]; // Get the IP address part before the slash
-                                                $_CACHE[$data['infos']['domain']]['ips'][] = ['canBeJoin' => null , 'ip' =>  $ip ] ;
-                                            }
+                                        foreach ($taskDetails['NetworksAttachments'] as $netWork) {
+                                            $ipRange = $netWork['Addresses'];
+                                            $ip = explode('/', $ipRange[0])[0]; // Get the IP address part before the slash
+                                            $_CACHE[$data['infos']['domain']]['ips'][] = ['canBeJoin' => null, 'ip' => $ip];
                                         }
+
 
                                         if ($_CACHE[$data['infos']['domain']]['nbTasksResolv'] == $nbTasks) {
                                             echo "All tasks resolved for service: " . $service['Spec']['Name'] . PHP_EOL;
