@@ -12,7 +12,7 @@ networks:
 
 services:
     test-web:
-      image: debian:test
+      image: debian:latest
       networks:
         - test-network-mysql
       dns:
