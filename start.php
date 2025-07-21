@@ -430,50 +430,54 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             if ($service['Spec']['Name'] == $serviceName) {
                                 echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
                                 $nbTasks = count($tasks);
+                                $_CACHE[$data['infos']['domain']]['nbTasksResolv'] = 0 ;
                                 foreach ($tasks as $task) {
                                     $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, $nbTasks, &$_CACHE, &$_TORESEND) {
+                                        var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
+
+                                        $_CACHE[$data['infos']['domain']]['nbTasksResolv']++ ;
+
                                         if (isset($taskDetails['NetworksAttachments'][0]['Addresses'])) {
                                             if ($taskDetails['Status']['State'] == 'running') {
                                                 $ipRange = $taskDetails['NetworksAttachments'][0]['Addresses'];
                                                 $ip = explode('/', $ipRange[0])[0]; // Get the IP address part before the slash
                                                 $_CACHE[$data['infos']['domain']]['ips'][] = ['canBeJoin' => null , 'ip' =>  $ip ] ;
-                                                if (count($_CACHE[$data['infos']['domain']]['ips']) == $nbTasks) {
-                                                    echo "All tasks resolved for service: " . $service['Spec']['Name'] . PHP_EOL;
-                                                    foreach ($_CACHE[$data['infos']['domain']]['ips'] as $displayIp) {
-                                                        echo "IPs: " . $displayIp['ip'] . PHP_EOL;
-                                                    }
+                                            }
+                                        }
+
+                                        if ($_CACHE[$data['infos']['domain']]['nbTasksResolv'] == $nbTasks) {
+                                            echo "All tasks resolved for service: " . $service['Spec']['Name'] . PHP_EOL;
+                                            foreach ($_CACHE[$data['infos']['domain']]['ips'] as $displayIp) {
+                                                echo "IPs: " . $displayIp['ip'] . PHP_EOL;
+                                            }
 
 
-                                                    $this->testIpConnectivity($data['infos']['domain'])
-                                                        ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND) {
-                                                            // Update the cache with the connectivity results
-                                                            $_CACHE[$data['infos']['domain']]['active'] = true;
+                                            $this->testIpConnectivity($data['infos']['domain'])
+                                                ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND) {
+                                                    // Update the cache with the connectivity results
+                                                    $_CACHE[$data['infos']['domain']]['active'] = true;
 
 
-                                                            if (!isset($_TORESEND[$data['infos']['domain']]))
-                                                                $_TORESEND[$data['infos']['domain']] = [] ;
+                                                    if (!isset($_TORESEND[$data['infos']['domain']]))
+                                                        $_TORESEND[$data['infos']['domain']] = [] ;
 
-                                                            $_TORESEND[$data['infos']['domain']][] = [
-                                                                'deferred' => $data['infos']['deferred'],
-                                                                'client' => $data['infos']['client'],
-                                                                'queries' => $data['infos']['queries'],
-                                                                'server' => $data['infos']['server'],
-                                                                'domainAsked' => $data['infos']['domainAsked'],
-                                                                'domain' => $data['infos']['domain']
-                                                            ];
+                                                    $_TORESEND[$data['infos']['domain']][] = [
+                                                        'deferred' => $data['infos']['deferred'],
+                                                        'client' => $data['infos']['client'],
+                                                        'queries' => $data['infos']['queries'],
+                                                        'server' => $data['infos']['server'],
+                                                        'domainAsked' => $data['infos']['domainAsked'],
+                                                        'domain' => $data['infos']['domain']
+                                                    ];
 
-                                                            $this->loop->futureTick(fn() => $this->retryResend());
-                                                            // add Periodic Check of IPs
-                                                            $_CACHE[$data['infos']['domain']]['timerConnectivity'] = ['id' => uniqid() . rand(1,10000) ] ;
-                                                            $_CACHE[$data['infos']['domain']]['timerConnectivity']['timer'] = $this->loop->addPeriodicTimer(1,fn() => $this->testIpConnectivity($data['infos']['domain'],$_CACHE[$data['infos']['domain']]['timerConnectivity']['id']));
+                                                    $this->loop->futureTick(fn() => $this->retryResend());
+                                                    // add Periodic Check of IPs
+                                                    $_CACHE[$data['infos']['domain']]['timerConnectivity'] = ['id' => uniqid() . rand(1,10000) ] ;
+                                                    $_CACHE[$data['infos']['domain']]['timerConnectivity']['timer'] = $this->loop->addPeriodicTimer(1,fn() => $this->testIpConnectivity($data['infos']['domain'],$_CACHE[$data['infos']['domain']]['timerConnectivity']['id']));
 //
 
-                                                    });
+                                                });
 
-
-                                                }
-
-                                            }
 
                                         }
 
