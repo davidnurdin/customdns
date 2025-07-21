@@ -1,3 +1,23 @@
+-----------------
+pb dans customdns :
+
+ss -x -a  | grep helper
+ss -x -a  | grep docker
+
+les connexion sont pas fermés
+
++ on a des connexion refuse (qui font qu'on na pas tjr les host alive alors qu'il le sont)
+
+--------
+
+voir : multi reseau pk on a tant d'ip ? faut t'il voir la source du network ??
+
+
+
+
+
+
+
 - probleme comment faire le test de connectivité depuis le container (qui a certe le network host + l'acces docker , mais n'arrive pas a acceder directement)
 (j'était persuadé qu'on arrivais a acceder avec l'ip local du host, mais non)
 ===> piste (ouvrir un container sur le meme reseau, en cas de multiple réseau?): docker run --rm -it --network container:2389ec859e0b nicolaka/netshoot telnet localhost 3306

@@ -36,7 +36,7 @@ services:
          - |
            apt-get update
            apt-get install -y socat
-           socat -v TCP-LISTEN:3306,fork EXEC:'echo AAAAAAAAAAAAAAAAAAAAAAAA;'
+           socat -v TCP-LISTEN:3306,fork,reuseaddr EXEC:'echo AAAAAAAAAAAAAAAAAAAAAAAA;'
         networks:
           - test-network-mysql
         ports:
@@ -55,7 +55,7 @@ services:
           apt-get install -y socat microsocks
           rm -f /var/run/dns-helper/helper.sock
           microsocks -p 1080 -i 127.0.0.1 &
-          exec socat UNIX-LISTEN:/var/run/dns-helper/helper.sock,fork TCP:127.0.0.1:1080
+          exec socat  -d -d -v UNIX-LISTEN:/var/run/dns-helper/helper.sock,fork,reuseaddr,backlog=512 TCP:127.0.0.1:1080
       networks:
         - helper
       volumes:
