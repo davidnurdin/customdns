@@ -344,13 +344,13 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     ]);
 
                     $unixSocketPath = '/var/run/dns-helper/helper.sock';
-                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop) {
+                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop,$deferred,$ip) {
                         echo "Connecté à la socket Unix SOCKS5\n";
 
                         // Étape 1 : Négociation SOCKS5 (no auth)
                         $proxy->write("\x05\x01\x00");
 
-                        $proxy->once('data', function ($data) use ($proxy) {
+                        $proxy->once('data', function ($data) use ($proxy,$deferred,$ip) {
                             if ($data !== "\x05\x00") {
                                 echo "Proxy SOCKS5 : méthode non supportée ou erreur\n";
                                 return;
@@ -359,8 +359,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             echo "Méthode d'auth OK, envoi de la requête de connexion...\n";
 
                             // Étape 2 : Demande de connexion à www.google.fr:80
-                            $addr = 'www.google.fr';
-                            $port = 80;
+                            $addr = $ip['ip'] ;
+                            $port = 3306;
 
                             $addrBytes = chr(strlen($addr)) . $addr;
                             $portBytes = pack('n', $port);
@@ -368,20 +368,29 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             $request = "\x05\x01\x00\x03" . $addrBytes . $portBytes;
                             $proxy->write($request);
 
-                            $proxy->once('data', function ($data) use ($proxy) {
+                            $proxy->once('data', function ($data) use ($proxy,$addr,$port,$deferred) {
                                 if (strlen($data) < 2 || $data[1] !== "\x00") {
                                     echo "Connexion refusée ou erreur SOCKS5\n";
                                     return;
                                 }
 
-                                echo "Connexion à www.google.fr:80 établie via SOCKS5\n";
+                                echo "Connexion à " . $addr . ":" . $port . " établie via SOCKS5\n";
 
                                 // Étape 3 : Envoi de la requête HTTP GET
-                                $httpRequest = "GET / HTTP/1.1\r\nHost: www.google.fr\r\nConnection: close\r\n\r\n";
-                                $proxy->write($httpRequest);
+//                                $httpRequest = "GET / HTTP/1.1\r\nHost: www.google.fr\r\nConnection: close\r\n\r\n";
+//                                $proxy->write($httpRequest);
 
-                                $proxy->on('data', function ($chunk) {
-                                    echo $chunk;
+                                $proxy->on('data', function ($chunk) use ($deferred) {
+                                   // echo $chunk;
+                                    echo "Received data from proxy: " . substr($chunk, 0, 50) . "...\n"; // Affiche les 50 premiers caractères
+                                    if (strlen($chunk) > 5)
+                                    {
+                                        echo "Data received successfully, connection is good.\n";
+                                        $deferred->resolve(true);
+                                    } else {
+                                        echo "Data received is too short, connection might not be good.\n";
+                                        $deferred->resolve(false);
+                                    }
                                 });
 
                                 $proxy->on('close', function () {
@@ -396,7 +405,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
 
                     return $deferred->promise()->then(function ($canBeJoin) use ($ip) {
-                        $canBeJoin =  (bool)rand(0,1); ; // TODO enlever
+                        //$canBeJoin =  (bool)rand(0,1); ; // TODO enlever
                         $ip['canBeJoin'] = $canBeJoin;
                         return $ip;
                     });
