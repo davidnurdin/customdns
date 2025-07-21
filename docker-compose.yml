@@ -30,7 +30,13 @@ services:
           condition: on-failure
     test-mysql:
         image: debian:latest
-        command: ["sh", "-c", "apt-get update && apt-get install -y netcat-traditional && while true; do if [ $$((RANDOM % 2)) -eq 0 ]; then echo 'AAAAAAAAAAAAAAAAAAAAAAAA'; fi | nc -l -p 3306; done"]
+        entrypoint: ["/bin/bash"]
+        command:
+         - "-eucx"
+         - |
+           apt-get update
+           apt-get install -y socat
+           socat -v TCP-LISTEN:3306,fork EXEC:'echo AAAAAAAAAAAAAAAAAAAAAAAA;'
         networks:
           - test-network-mysql
         ports:
