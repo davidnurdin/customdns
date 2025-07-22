@@ -119,7 +119,7 @@ class myResolver implements ResolverInterface
                 ];
 
                 if ($this->server)
-                    $this->loop->futureTick(fn() => $this->server->resolveDocker());
+                    $this->loop->addTimer(0.1,fn() => $this->server->resolveDocker());
             }
         }
 
@@ -193,7 +193,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $this->resolver->server = $this;
 
         $this->loop->addPeriodicTimer(1, fn() => $this->retryResend());
-        $this->loop->addPeriodicTimer(20, fn() => $this->emptyCache());
+        $this->loop->addPeriodicTimer(60, fn() => $this->emptyCache());
 
     }
 
@@ -353,8 +353,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 });
                             });
                         });
-                    }, function (Exception $e) use ($proxy) {
-                        $proxy->close();
+                    }, function (Exception $e){
                         echo "Échec de connexion à la socket Unix : " . $e->getMessage() . "\n";
                     });
 
@@ -441,10 +440,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                         'domain' => $data['infos']['domain']
                                                     ];
 
-                                                    $this->loop->futureTick(fn() => $this->retryResend());
+                                                    $this->loop->addTimer(0.2,(fn() => $this->retryResend()));
                                                     // add Periodic Check of IPs
                                                     $_CACHE[$data['infos']['domain']]['timerConnectivity'] = ['id' => uniqid() . rand(1,10000) ] ;
-                                                    $_CACHE[$data['infos']['domain']]['timerConnectivity']['timer'] = $this->loop->addPeriodicTimer(1,fn() => $this->testIpConnectivity($data['infos']['domain'],$_CACHE[$data['infos']['domain']]['timerConnectivity']['id']));
+                                                    $_CACHE[$data['infos']['domain']]['timerConnectivity']['timer'] = $this->loop->addPeriodicTimer(5,fn() => $this->testIpConnectivity($data['infos']['domain'],$_CACHE[$data['infos']['domain']]['timerConnectivity']['id']));
 //
 
                                                 });
