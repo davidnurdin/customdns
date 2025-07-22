@@ -265,29 +265,44 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     $deferred = new \React\Promise\Deferred();
                     $loop = $this->loop ?? \React\EventLoop\Loop::get();
 
-                    $timeout = $this->timeout ?? 1.0; // Default timeout is 1 second, can be set as property
+
+                    $connector = new Connector([
+                        'unix' => true,
+                    ]);
+
+                    // 1er timer
+                    $timeout = $this->timeout ?? 2.0; // Default timeout is 1 second, can be set as property
                     $timedOut = false;
                     echo "Attempting to connect to {$ip['ip']}:3306 with timeout {$timeout}s" . PHP_EOL;
-                    $timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip) {
+                    $timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip,$connector) {
                         $timedOut = true;
                         echo "Connection to {$ip['ip']}:3306 timed out." . PHP_EOL;
                         $deferred->resolve(false);
                     });
 
 
-                    $connector = new Connector([
-                        'unix' => true,
-                    ]);
-
                     $unixSocketPath = '/var/run/dns-helper/helper.sock';
-                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop,$deferred,$ip) {
+                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop,$deferred,$ip,$timer) {
                         echo "Connecté à la socket Unix SOCKS5\n";
+                        $loop->cancelTimer($timer);
+
+                        // 2eme timer
+                        $timeout = $this->timeout ?? 2.0; // Default timeout is 1 second, can be set as property
+                        $timedOut = false;
+                        echo "Attempting to connect to {$ip['ip']}:3306 with timeout {$timeout}s" . PHP_EOL;
+                        $timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip,$proxy) {
+                            $timedOut = true;
+                            $proxy->close();
+                            echo "Connection(2) to {$ip['ip']}:3306 timed out." . PHP_EOL;
+                            $deferred->resolve(false);
+                        });
 
                         // Étape 1 : Négociation SOCKS5 (no auth)
                         $proxy->write("\x05\x01\x00");
 
                         $proxy->once('data', function ($data) use ($proxy,$deferred,$ip) {
                             if ($data !== "\x05\x00") {
+                                $proxy->close();
                                 echo "Proxy SOCKS5 : méthode non supportée ou erreur\n";
                                 return;
                             }
@@ -309,6 +324,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     $hex = strtoupper(implode(' ', str_split(bin2hex($data), 2)));
                                     echo "[ERR] => Réponse du proxy SOCKS5 : " . $hex . "\n";
                                     echo "Connexion refusée ou erreur SOCKS5\n";
+                                    $proxy->close();
                                     return;
                                 }
 
@@ -318,9 +334,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                $httpRequest = "GET / HTTP/1.1\r\nHost: www.google.fr\r\nConnection: close\r\n\r\n";
 //                                $proxy->write($httpRequest);
 
-                                $proxy->on('data', function ($chunk) use ($deferred) {
+                                $proxy->on('data', function ($chunk) use ($deferred,$proxy) {
                                    // echo $chunk;
                                     echo "Received data from proxy: " . substr($chunk, 0, 50) . "...\n"; // Affiche les 50 premiers caractères
+                                    $proxy->close();
                                     if (strlen($chunk) > 5)
                                     {
                                         echo "Data received successfully, connection is good.\n";
@@ -336,7 +353,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 });
                             });
                         });
-                    }, function (Exception $e) {
+                    }, function (Exception $e) use ($proxy) {
+                        $proxy->close();
                         echo "Échec de connexion à la socket Unix : " . $e->getMessage() . "\n";
                     });
 
