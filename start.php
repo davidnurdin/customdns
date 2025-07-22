@@ -199,7 +199,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
     public function emptyCache()
     {
-        return ;
+        return ; // TODO : voir
 
         global $_CACHE;
         // Empty the cache every 20 seconds
@@ -306,6 +306,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             if ($data !== "\x05\x00") {
                                 $proxy->close();
                                 echo "Proxy SOCKS5 : méthode non supportée ou erreur\n";
+                                $deferred->resolve(false);
                                 return;
                             }
 
@@ -326,6 +327,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     $hex = strtoupper(implode(' ', str_split(bin2hex($data), 2)));
                                     echo "[ERR] => Réponse du proxy SOCKS5 : " . $hex . "\n";
                                     echo "Connexion refusée ou erreur SOCKS5\n";
+                                    $deferred->resolve(false);
                                     $proxy->close();
                                     return;
                                 }
@@ -355,7 +357,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 });
                             });
                         });
-                    }, function (Exception $e){
+                    }, function (Exception $e) use ($deferred) {
+                        // defered false
+                        $deferred->resolve(false);
                         echo "Échec de connexion à la socket Unix : " . $e->getMessage() . "\n";
                     });
 
@@ -375,6 +379,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         }
 
         return \React\Promise\all($promises)->then(function ($results) use ($domain,&$_CACHE) {
+            // TODO : voir si y'a pas des timer en concurrence ?
+            echo "WRITE ips TO domain : " . $domain ." count ( " . count($results) . " \n" ;
             $_CACHE[$domain]['ips'] = $results;
             return $results;
         });
