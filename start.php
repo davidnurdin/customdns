@@ -250,6 +250,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
     {
         global $_CACHE;
 
+
         echo "\n\nCALL FROM : " . $idTimer . "\n" ;
 
         $promises = [];
@@ -305,6 +306,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                             $proxy->once('data', function ($data) use ($proxy,$addr,$port,$deferred) {
                                 if (strlen($data) < 2 || $data[1] !== "\x00") {
+                                    $hex = strtoupper(implode(' ', str_split(bin2hex($data), 2)));
+                                    echo "[ERR] => Réponse du proxy SOCKS5 : " . $hex . "\n";
                                     echo "Connexion refusée ou erreur SOCKS5\n";
                                     return;
                                 }
