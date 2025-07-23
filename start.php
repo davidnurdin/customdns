@@ -328,7 +328,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             $proxy->write($request);
 
 $timedOut = false ;
-$timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip,$connector) {
+$timeout = $this->timeout ?? 5.0; // Default timeout is 1 second, can be set as property
+$timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip) {
                         $timedOut = true;
                         echo "XXXXXX sent connect trame to {$ip['ip']}:3306 timed out." . PHP_EOL;
                         $deferred->resolve(false);
