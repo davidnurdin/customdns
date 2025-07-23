@@ -273,7 +273,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     ]);
 
                     // 1er timer
-                    $timeout = $this->timeout ?? 2.0; // Default timeout is 1 second, can be set as property
+                    $timeout = $this->timeout ?? 5.0; // Default timeout is 1 second, can be set as property
                     $timedOut = false;
                     echo "Attempting to connect to {$ip['ip']}:3306 with timeout {$timeout}s" . PHP_EOL;
                     $timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip,$connector) {
@@ -289,7 +289,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         $loop->cancelTimer($timer);
 
                         // 2eme timer
-                        $timeout = $this->timeout ?? 2.0; // Default timeout is 1 second, can be set as property
+                        $timeout = $this->timeout ?? 5.0; // Default timeout is 1 second, can be set as property
                         $timedOut = false;
                         echo "Attempting to connect to {$ip['ip']}:3306 with timeout {$timeout}s" . PHP_EOL;
                         $timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip,$proxy) {
@@ -306,6 +306,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             if ($data !== "\x05\x00") {
                                 $proxy->close();
                                 echo "Proxy SOCKS5 : méthode non supportée ou erreur\n";
+				  echo "Connection(2) to {$ip['ip']}:3306 not support." . PHP_EOL;
+
                                 $deferred->resolve(false);
                                 return;
                             }
@@ -322,11 +324,13 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             $request = "\x05\x01\x00\x03" . $addrBytes . $portBytes;
                             $proxy->write($request);
 
-                            $proxy->once('data', function ($data) use ($proxy,$addr,$port,$deferred) {
+                            $proxy->once('data', function ($data) use ($proxy,$addr,$port,$deferred,$ip) {
                                 if (strlen($data) < 2 || $data[1] !== "\x00") {
                                     $hex = strtoupper(implode(' ', str_split(bin2hex($data), 2)));
                                     echo "[ERR] => Réponse du proxy SOCKS5 : " . $hex . "\n";
                                     echo "Connexion refusée ou erreur SOCKS5\n";
+				    echo "Connection(2) to {$ip['ip']}:3306 connexion refuse." . PHP_EOL;
+
                                     $deferred->resolve(false);
                                     $proxy->close();
                                     return;
@@ -360,7 +364,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     }, function (Exception $e) use ($deferred) {
                         // defered false
                         $deferred->resolve(false);
-                        echo "Échec de connexion à la socket Unix : " . $e->getMessage() . "\n";
+                        echo "|||||||||||||| Échec de connexion à la socket Unix : " . $e->getMessage() . "\n";
                     });
 
 
