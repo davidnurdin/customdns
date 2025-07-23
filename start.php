@@ -335,7 +335,7 @@ $timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip,$
                     });
 
 
-                            $proxy->once('data', function ($data) use ($proxy,$addr,$port,$deferred,$ip,$timer) {
+                            $proxy->once('data', function ($data) use ($proxy,$addr,$port,$deferred,$ip,$timer,$loop) {
 
   $loop->cancelTimer($timer);
                                 if (strlen($data) < 2 || $data[1] !== "\x00") {
