@@ -378,12 +378,20 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 });
         }
 
-        return \React\Promise\all($promises)->then(function ($results) use ($domain,&$_CACHE) {
+echo "END FOREACH\n";
+
+       $result = \React\Promise\all($promises)->then(function ($results) use ($domain,&$_CACHE) {
             // TODO : voir si y'a pas des timer en concurrence ?
             echo "WRITE ips TO domain : " . $domain ." count ( " . count($results) . " \n" ;
+var_export($results);
+
             $_CACHE[$domain]['ips'] = $results;
             return $results;
         });
+
+echo "END PROMISE\n" ;
+
+return $result ;
     }
     public function resolveDocker()
     {
