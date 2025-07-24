@@ -377,11 +377,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     }
                                 });
 
-                                $proxy->once('close', function () use ($timer4, $loop,$deferred) {
-                                    $loop->cancelTimer($timer4);
-                                    $deferred->resolve(false);
-                                    echo "\n(4) Connexion fermée\n";
-                                });
+                                // soit on recois des data , soit on a un timeout
+//                                $proxy->once('close', function () use ($timer4, $loop,$deferred) {
+//                                    $loop->cancelTimer($timer4);
+//                                    $deferred->resolve(false);
+//                                    echo "\n(4) Connexion fermée\n";
+//                                });
                             });
                         });
                     }, function (Exception $e) use ($deferred) {
