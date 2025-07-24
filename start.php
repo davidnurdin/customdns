@@ -275,7 +275,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         // echo $chunk;
         if ($timer)
             $loop->cancelTimer($timer);
-        
+
         echo "Received data from proxy: " . substr($chunk, 0, 50) . "...\n"; // Affiche les 50 premiers caractères
         $proxy->close();
         if (strlen($chunk) > 5) {
@@ -393,6 +393,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 $proxy->on('data', fn($chunk) => $this->dataFromProxy($chunk,$loop,$proxy,$deferred,$timer4));
 
                                 // soit on recois des data , soit on a un timeout
+                                // TODO : voir comment gerer les close ?! (peut on faire un deferred = true, puis un false ?)
 //                                $proxy->once('close', function () use ($timer4, $loop,$deferred) {
 //                                    $loop->cancelTimer($timer4);
 //                                    $deferred->resolve(false);
