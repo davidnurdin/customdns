@@ -393,7 +393,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 $proxy->on('data', fn($chunk) => $this->dataFromProxy($chunk,$loop,$proxy,$deferred,$timer4));
 
                                 // soit on recois des data , soit on a un timeout
-                                // TODO : voir comment gerer les close ?! (peut on faire un deferred = true, puis un false ?)
+                                // TODO : voir comment gerer les close ?! (peut on faire un deferred = true, puis un false ?) (ou testé si le deferred a été triggered)
 //                                $proxy->once('close', function () use ($timer4, $loop,$deferred) {
 //                                    $loop->cancelTimer($timer4);
 //                                    $deferred->resolve(false);
