@@ -310,7 +310,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         $proxy->write("\x05\x01\x00");
 
                         $proxy->once('data', function ($data) use ($proxy,$deferred,$ip,$timer2,$loop) {
-
                             $loop->cancelTimer($timer2);
                             if ($data !== "\x05\x00") {
                                 $proxy->close();
