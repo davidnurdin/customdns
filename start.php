@@ -269,6 +269,23 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         return $timer;
     }
 
+    public function dataFromProxy($chunk,$loop,$proxy,$deferred,$timer)
+    {
+        var_dump('(2) SIZE DATA : ' . strlen($chunk) . ' DATA : ' . bin2hex($chunk));
+        // echo $chunk;
+        $loop->cancelTimer($timer);
+        echo "Received data from proxy: " . substr($chunk, 0, 50) . "...\n"; // Affiche les 50 premiers caractères
+        $proxy->close();
+        if (strlen($chunk) > 5) {
+            echo "Data received successfully, connection is good.\n";
+            $deferred->resolve(true);
+        } else {
+            echo "Data received is too short, connection might not be good.\n";
+            $deferred->resolve(false);
+        }
+    }
+
+
     public function testIpConnectivity($domain, string $idTimer = null)
     {
         global $_CACHE;
@@ -358,8 +375,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     return;
                                 }
 
-                                if (strlen($data) > 10)
-                                {
+                                if (strlen($data) > 10) {
                                     // restant de la requete
                                     $remainingData = substr($data, 10);
 
@@ -371,21 +387,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                $proxy->write($httpRequest);
 
                                 $timer4 = $this->createTimeout(5, $loop, $deferred, "Connection(4) to {$ip['ip']}:3306");
-                                $proxy->on('data', function ($chunk) use ($deferred, $proxy, $timer4, $loop) {
-                                    var_dump('(2) SIZE DATA : ' . strlen($chunk) . ' DATA : ' . bin2hex($chunk));
-
-                                    // echo $chunk;
-                                    $loop->cancelTimer($timer4);
-                                    echo "Received data from proxy: " . substr($chunk, 0, 50) . "...\n"; // Affiche les 50 premiers caractères
-                                    $proxy->close();
-                                    if (strlen($chunk) > 5) {
-                                        echo "Data received successfully, connection is good.\n";
-                                        $deferred->resolve(true);
-                                    } else {
-                                        echo "Data received is too short, connection might not be good.\n";
-                                        $deferred->resolve(false);
-                                    }
-                                });
+                                $proxy->on('data', fn() => $this->dataFromProxy());
 
                                 // soit on recois des data , soit on a un timeout
 //                                $proxy->once('close', function () use ($timer4, $loop,$deferred) {
@@ -431,7 +433,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         return $result;
     }
 
-    public function resolveDocker()
+    public
+    function resolveDocker()
     {
         global $_TORESOLVE, $_CACHE, $_TORESEND;
         if (count($_TORESOLVE) > 0) {
@@ -532,7 +535,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         }
     }
 
-    public function onMessage(string $message, string $address, SocketInterface $socket): void
+    public
+    function onMessage(string $message, string $address, SocketInterface $socket): void
     {
         $this->handleQueryFromStreamAsync($message, $address)->then(
             function (string $response) use ($socket, $address) {
@@ -545,7 +549,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         );
     }
 
-    public function handleQueryFromStreamAsync(string $buffer, ?string $client = null): PromiseInterface
+    public
+    function handleQueryFromStreamAsync(string $buffer, ?string $client = null): PromiseInterface
     {
         $message = Decoder::decodeMessage($buffer);
 
