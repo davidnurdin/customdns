@@ -335,7 +335,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
 
                             $timer3 = $this->createTimeout(5,$loop,$deferred,"Connection(3) to {$ip['ip']}:3306");
-                            $proxy->on('close', function () use ($timer3,$loop) {
+                            $proxy->once('close', function () use ($timer3,$loop) {
                                 $loop->cancelTimer($timer3);
                                 echo "\n(3) Connexion fermée\n";
                             });
@@ -375,7 +375,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     }
                                 });
 
-                                $proxy->on('close', function () use ($timer4,$loop) {
+                                $proxy->once('close', function () use ($timer4,$loop) {
                                     $loop->cancelTimer($timer4);
                                     echo "\n(4) Connexion fermée\n";
                                 });
