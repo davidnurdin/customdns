@@ -269,11 +269,13 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         return $timer;
     }
 
-    public function dataFromProxy($chunk,$loop,$proxy,$deferred,$timer)
+    public function dataFromProxy($chunk,$loop,$proxy,$deferred,$timer = null)
     {
         var_dump('(2) SIZE DATA : ' . strlen($chunk) . ' DATA : ' . bin2hex($chunk));
         // echo $chunk;
-        $loop->cancelTimer($timer);
+        if ($timer)
+            $loop->cancelTimer($timer);
+        
         echo "Received data from proxy: " . substr($chunk, 0, 50) . "...\n"; // Affiche les 50 premiers caractères
         $proxy->close();
         if (strlen($chunk) > 5) {
@@ -378,6 +380,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 if (strlen($data) > 10) {
                                     // restant de la requete
                                     $remainingData = substr($data, 10);
+                                    $this->dataFromProxy($remainingData,$loop,$proxy,$deferred,null) ;
 
                                 }
                                 echo "Connexion à " . $addr . ":" . $port . " établie via SOCKS5\n";
