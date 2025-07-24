@@ -231,6 +231,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 continue;
             }
 
+            var_export($_CACHE[$domain]);
+            
             if (isset($_CACHE[$domain]) && isset($_CACHE[$domain]['active']) && $_CACHE[$domain]['active'] === true) {
 
                 echo "NB CLIENT : " . count($clients) . PHP_EOL;
