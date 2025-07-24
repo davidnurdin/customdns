@@ -377,7 +377,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                 $proxy->on('close', function () use ($timer4,$loop) {
                                     $loop->cancelTimer($timer4);
-                                    echo "\n(4) Connexion fermée\n";
+                                    echo "\nConnexion fermée\n";
                                 });
                             });
                         });
