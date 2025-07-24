@@ -268,7 +268,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             echo "Timeout is CATCH on " . $message . " after " . $time . " seconds." . PHP_EOL;
             $deferred->resolve(false);
         });
+
+        return $timer ;
     }
+    
     public function testIpConnectivity($domain,string $idTimer = null)
     {
         global $_CACHE;
