@@ -261,7 +261,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
     {
         // 1er timer
         echo "Timeout on : " . $message . " after " . $time . " seconds." . PHP_EOL;
-        $timer = $loop->addTimer($time, function () use (&$timedOut, $deferred, $message, $time) {
+        $timer = $loop->addTimer($time, function () use ($deferred, $message, $time) {
             echo "Timeout is CATCH on " . $message . " after " . $time . " seconds." . PHP_EOL;
             $deferred->resolve(false);
         });
