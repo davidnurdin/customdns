@@ -343,7 +343,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     $hex = strtoupper(implode(' ', str_split(bin2hex($data), 2)));
                                     echo "[ERR] => Réponse du proxy SOCKS5 : " . $hex . "\n";
                                     echo "Connexion refusée ou erreur SOCKS5\n";
-				    echo "Connection(3) to {$ip['ip']}:3306 connexion refuse." . PHP_EOL;
+				                    echo "Connection(3) to {$ip['ip']}:3306 connexion refuse." . PHP_EOL;
 
                                     $deferred->resolve(false);
                                     $proxy->close();
