@@ -472,7 +472,7 @@ return $result ;
                                                 ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND) {
                                                     // Update the cache with the connectivity results
                                                     echo "=========+> SET ACTIVE DOMAIN : " . $data['infos']['domain'] . PHP_EOL;
-                                                    
+
                                                     $_CACHE[$data['infos']['domain']]['active'] = true;
 
 
