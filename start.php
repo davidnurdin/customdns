@@ -387,7 +387,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                $proxy->write($httpRequest);
 
                                 $timer4 = $this->createTimeout(5, $loop, $deferred, "Connection(4) to {$ip['ip']}:3306");
-                                $proxy->on('data', fn() => $this->dataFromProxy());
+                                $proxy->on('data', fn($chunk) => $this->dataFromProxy($chunk,$loop,$proxy,$deferred,$timer4));
 
                                 // soit on recois des data , soit on a un timeout
 //                                $proxy->once('close', function () use ($timer4, $loop,$deferred) {
