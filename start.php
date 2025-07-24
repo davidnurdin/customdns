@@ -253,7 +253,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         global $_CACHE;
 
 
-        echo "\n\nCALL FROM : " . $idTimer . "\n" ;
+        echo "\n\nCALLXXXX FROM : " . $idTimer . "\n" ;
 
         $promises = [];
         foreach ($_CACHE[$domain]['ips'] as $ip) {
