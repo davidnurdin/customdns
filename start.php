@@ -354,8 +354,11 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                $httpRequest = "GET / HTTP/1.1\r\nHost: www.google.fr\r\nConnection: close\r\n\r\n";
 //                                $proxy->write($httpRequest);
 
-                                $proxy->on('data', function ($chunk) use ($deferred,$proxy) {
+                                $timer4 = $this->createTimeout(5,$loop,$deferred,"Connection(4) to {$ip['ip']}:3306");
+
+                                $proxy->on('data', function ($chunk) use ($deferred,$proxy,$timer4,$loop) {
                                    // echo $chunk;
+                                    $loop->cancelTimer($timer4);
                                     echo "Received data from proxy: " . substr($chunk, 0, 50) . "...\n"; // Affiche les 50 premiers caractères
                                     $proxy->close();
                                     if (strlen($chunk) > 5)
