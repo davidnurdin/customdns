@@ -309,6 +309,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         // Étape 1 : Négociation SOCKS5 (no auth)
                         $proxy->write("\x05\x01\x00");
 
+                        $proxy->once('close', function () use ($timer2,$loop) {
+                            $loop->cancelTimer($timer2);
+                            echo "\n(2) Connexion fermée\n";
+                        });
+
+
                         $proxy->once('data', function ($data) use ($proxy,$deferred,$ip,$timer2,$loop) {
                             $loop->cancelTimer($timer2);
                             if ($data !== "\x05\x00") {
