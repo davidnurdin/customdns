@@ -232,7 +232,13 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             }
 
             if (isset($_CACHE[$domain]) && isset($_CACHE[$domain]['active']) && $_CACHE[$domain]['active']) {
+
+                echo "NB CLIENT : " . count($clients) . PHP_EOL;
+
                 foreach ($clients as $data) {
+                    
+                    echo "RESEND FOR CLIENT ..." . PHP_EOL;
+
                     // If the domain is active, we can send the response
                     $this->resolver->getAnswerAsync($data['queries'], $data['client'], $data['deferred'])
                         ->then(function (array $answers) use ($data) {
@@ -243,6 +249,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         });
                 }
                 unset($_TORESEND[$domain]);
+            }
+            else
+            {
+                echo "TRACE1\n" ;
             }
 
         }
