@@ -319,7 +319,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 $proxy->close();
                                 echo "Proxy SOCKS5 : méthode non supportée ou erreur\n";
                                 echo "Connection(2) to {$ip['ip']}:3306 not support." . PHP_EOL;
-
                                 $deferred->resolve(false);
                                 return;
                             }
