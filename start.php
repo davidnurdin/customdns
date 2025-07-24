@@ -231,12 +231,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 continue;
             }
 
-            if (isset($_CACHE[$domain]) && isset($_CACHE[$domain]['active']) && $_CACHE[$domain]['active']) {
+            if (isset($_CACHE[$domain]) && isset($_CACHE[$domain]['active']) && $_CACHE[$domain]['active'] === true) {
 
                 echo "NB CLIENT : " . count($clients) . PHP_EOL;
 
                 foreach ($clients as $data) {
-                    
+
                     echo "RESEND FOR CLIENT ..." . PHP_EOL;
 
                     // If the domain is active, we can send the response
