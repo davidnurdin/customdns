@@ -260,6 +260,15 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         }
     }
 
+    public function createTimeout(int $time,LoopInterface $loop,$ip,$deferred)
+    {
+        // 1er timer
+        echo "Attempting to connect to {$ip['ip']}:3306 with timeout {$time}s" . PHP_EOL;
+        $timer = $loop->addTimer($time, function () use (&$timedOut, $deferred, $ip) {
+            echo "Connection to {$ip['ip']}:3306 timed out." . PHP_EOL;
+            $deferred->resolve(false);
+        });
+    }
     public function testIpConnectivity($domain,string $idTimer = null)
     {
         global $_CACHE;
@@ -284,15 +293,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         'unix' => true,
                     ]);
 
-                    // 1er timer
-                    $timeout = $this->timeout ?? 5.0; // Default timeout is 1 second, can be set as property
-                    $timedOut = false;
-                    echo "Attempting to connect to {$ip['ip']}:3306 with timeout {$timeout}s" . PHP_EOL;
-                    $timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip,$connector) {
-                        $timedOut = true;
-                        echo "Connection to {$ip['ip']}:3306 timed out." . PHP_EOL;
-                        $deferred->resolve(false);
-                    });
+
+
+                    $timeout = $this->createTimeout(5,$loop);
 
 
                     $unixSocketPath = '/var/run/dns-helper/helper.sock';
