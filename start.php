@@ -363,7 +363,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                $proxy->write($httpRequest);
 
                                 $timer4 = $this->createTimeout(5, $loop, $deferred, "Connection(4) to {$ip['ip']}:3306");
-
                                 $proxy->on('data', function ($chunk) use ($deferred, $proxy, $timer4, $loop) {
                                     // echo $chunk;
                                     $loop->cancelTimer($timer4);
@@ -378,8 +377,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     }
                                 });
 
-                                $proxy->once('close', function () use ($timer4, $loop) {
+                                $proxy->once('close', function () use ($timer4, $loop,$deferred) {
                                     $loop->cancelTimer($timer4);
+                                    $deferred->resolve(false);
                                     echo "\n(4) Connexion fermée\n";
                                 });
                             });
