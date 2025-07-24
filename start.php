@@ -286,6 +286,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     // check if we can connect to the IP with react php socket
                     // INSERT_YOUR_CODE
                     $deferred = new \React\Promise\Deferred();
+                    echo "NEW DEFERRED for IP: " . $ip['ip'] . " in domain: " . $domain . PHP_EOL;
+
                     $loop = $this->loop ?? \React\EventLoop\Loop::get();
 
 
