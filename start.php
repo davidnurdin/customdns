@@ -292,12 +292,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         $timeout = $this->timeout ?? 5.0; // Default timeout is 1 second, can be set as property
                         $timedOut = false;
                         echo date('Y-m-d H:i:s') . " => Attempting to connect to {$ip['ip']}:3306 with timeout {$timeout}s" . PHP_EOL;
-//                        $timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip,$proxy) {
-//                            $timedOut = true;
-//                            $proxy->close();
-//                            echo date('Y-m-d H:i:s') . " => Connection(2) to {$ip['ip']}:3306 timed out." . PHP_EOL;
-//                            $deferred->resolve(false);
-//                        });
+                        $timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip,$proxy) {
+                            $timedOut = true;
+                            $proxy->close();
+                            echo date('Y-m-d H:i:s') . " => Connection(2) to {$ip['ip']}:3306 timed out." . PHP_EOL;
+                            $deferred->resolve(false);
+                        });
 
                         // Étape 1 : Négociation SOCKS5 (no auth)
                         $proxy->write("\x05\x01\x00");
@@ -327,18 +327,18 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             $request = "\x05\x01\x00\x03" . $addrBytes . $portBytes;
                             $proxy->write($request);
 
-//$timedOut = false ;
-//$timeout = $this->timeout ?? 5.0; // Default timeout is 1 second, can be set as property
-//$timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip) {
-//                        $timedOut = true;
-//                        echo "XXXXXX sent connect trame to {$ip['ip']}:3306 timed out." . PHP_EOL;
-//                        $deferred->resolve(false);
-//                    });
+$timedOut = false ;
+$timeout = $this->timeout ?? 5.0; // Default timeout is 1 second, can be set as property
+$timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip) {
+                        $timedOut = true;
+                        echo "XXXXXX sent connect trame to {$ip['ip']}:3306 timed out." . PHP_EOL;
+                        $deferred->resolve(false);
+                    });
 
 
                             $proxy->once('data', function ($data) use ($proxy,$addr,$port,$deferred,$ip,$timer,$loop) {
 
-  // $loop->cancelTimer($timer);
+  $loop->cancelTimer($timer);
                                 if (strlen($data) < 2 || $data[1] !== "\x00") {
                                     $hex = strtoupper(implode(' ', str_split(bin2hex($data), 2)));
                                     echo "[ERR] => Réponse du proxy SOCKS5 : " . $hex . "\n";
