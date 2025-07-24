@@ -358,6 +358,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     return;
                                 }
 
+                                if (strlen($data) > 10)
+                                {
+                                    // restant de la requete
+                                    $remainingData = substr($data, 10);
+
+                                }
                                 echo "Connexion à " . $addr . ":" . $port . " établie via SOCKS5\n";
 
                                 // Étape 3 : Envoi de la requête HTTP GET
