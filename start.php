@@ -271,7 +271,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         return $timer ;
     }
-    
+
     public function testIpConnectivity($domain,string $idTimer = null)
     {
         global $_CACHE;
@@ -298,31 +298,20 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
 
 
-                    $timeout = $this->createTimeout(5,$loop);
-
-
+                    $timer1 = $this->createTimeout(5,$loop,$deferred,"Connection(1) to {$ip['ip']}:3306");
                     $unixSocketPath = '/var/run/dns-helper/helper.sock';
-                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop,$deferred,$ip,$timer) {
+                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop,$deferred,$ip,$timer1) {
                         echo "Connecté à la socket Unix SOCKS5\n";
-                        $loop->cancelTimer($timer);
+                        $loop->cancelTimer($timer1);
 
                         // 2eme timer
-                        $timeout = $this->timeout ?? 5.0; // Default timeout is 1 second, can be set as property
-                        $timedOut = false;
-                        echo date('Y-m-d H:i:s') . " => Attempting to connect to {$ip['ip']}:3306 with timeout {$timeout}s" . PHP_EOL;
-                        $timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip,$proxy) {
-                            $timedOut = true;
-                            $proxy->close();
-                            echo date('Y-m-d H:i:s') . " => Connection(2) to {$ip['ip']}:3306 timed out." . PHP_EOL;
-                            $deferred->resolve(false);
-                        });
-
+                        $timer2 = $this->createTimeout(5,$loop,$deferred,"Connection(1) to {$ip['ip']}:3306");
                         // Étape 1 : Négociation SOCKS5 (no auth)
                         $proxy->write("\x05\x01\x00");
 
-                        $proxy->once('data', function ($data) use ($proxy,$deferred,$ip,$timer,$loop) {
+                        $proxy->once('data', function ($data) use ($proxy,$deferred,$ip,$timer2,$loop) {
 
-                            $loop->cancelTimer($timer);
+                            $loop->cancelTimer($timer2);
                             if ($data !== "\x05\x00") {
                                 $proxy->close();
                                 echo "Proxy SOCKS5 : méthode non supportée ou erreur\n";
