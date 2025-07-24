@@ -333,18 +333,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             $request = "\x05\x01\x00\x03" . $addrBytes . $portBytes;
                             $proxy->write($request);
 
-$timedOut = false ;
-$timeout = $this->timeout ?? 5.0; // Default timeout is 1 second, can be set as property
-$timer = $loop->addTimer($timeout, function () use (&$timedOut, $deferred, $ip) {
-                        $timedOut = true;
-                        echo "XXXXXX sent connect trame to {$ip['ip']}:3306 timed out." . PHP_EOL;
-                        $deferred->resolve(false);
-                    });
 
+                            $timer3 = $this->createTimeout(5,$loop,$deferred,"Connection(3) to {$ip['ip']}:3306");
 
-                            $proxy->once('data', function ($data) use ($proxy,$addr,$port,$deferred,$ip,$timer,$loop) {
+                            $proxy->once('data', function ($data) use ($proxy,$addr,$port,$deferred,$ip,$timer3,$loop) {
 
-  $loop->cancelTimer($timer);
+                                $loop->cancelTimer($timer3);
                                 if (strlen($data) < 2 || $data[1] !== "\x00") {
                                     $hex = strtoupper(implode(' ', str_split(bin2hex($data), 2)));
                                     echo "[ERR] => Réponse du proxy SOCKS5 : " . $hex . "\n";
