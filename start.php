@@ -346,8 +346,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                             $proxy->once('data', function ($data) use ($proxy, $addr, $port, $deferred, $ip, $timer3, $loop) {
                                 $loop->cancelTimer($timer3);
-                                var_dump('SIZE DATA : ' . strlen($data) . ' DATA : ' . bin2hex($data));
-                                
+                                var_dump('(1) SIZE DATA : ' . strlen($data) . ' DATA : ' . bin2hex($data));
+
                                 if (strlen($data) < 2 || $data[1] !== "\x00") {
                                     $hex = strtoupper(implode(' ', str_split(bin2hex($data), 2)));
                                     echo "[ERR] => Réponse du proxy SOCKS5 : " . $hex . "\n";
@@ -366,6 +366,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                 $timer4 = $this->createTimeout(5, $loop, $deferred, "Connection(4) to {$ip['ip']}:3306");
                                 $proxy->on('data', function ($chunk) use ($deferred, $proxy, $timer4, $loop) {
+                                    var_dump('(2) SIZE DATA : ' . strlen($chunk) . ' DATA : ' . bin2hex($chunk));
+
                                     // echo $chunk;
                                     $loop->cancelTimer($timer4);
                                     echo "Received data from proxy: " . substr($chunk, 0, 50) . "...\n"; // Affiche les 50 premiers caractères
