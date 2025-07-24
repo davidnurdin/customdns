@@ -390,7 +390,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                     return $deferred->promise()->then(function ($canBeJoin) use ($ip) {
                         //$canBeJoin =  (bool)rand(0,1); ; // TODO enlever
-                        echo " RESPONSE : " . $ip['ip'] . " can be join : " . var_export($canBeJoin, true) . "\n";
+                        echo " ========> RESPONSE : " . $ip['ip'] . " can be join : " . var_export($canBeJoin, true) . "\n";
                         $ip['canBeJoin'] = $canBeJoin;
                         return $ip;
                     });
