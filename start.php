@@ -337,7 +337,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             $timer3 = $this->createTimeout(5,$loop,$deferred,"Connection(3) to {$ip['ip']}:3306");
 
                             $proxy->once('data', function ($data) use ($proxy,$addr,$port,$deferred,$ip,$timer3,$loop) {
-
                                 $loop->cancelTimer($timer3);
                                 if (strlen($data) < 2 || $data[1] !== "\x00") {
                                     $hex = strtoupper(implode(' ', str_split(bin2hex($data), 2)));
