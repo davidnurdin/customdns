@@ -260,10 +260,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         }
     }
 
-    public function createTimeout(int $time,LoopInterface $loop,$ip,$deferred)
+    public function createTimeout(int $time,LoopInterface $loop,$deferred,$message)
     {
         // 1er timer
-        echo "Attempting to connect to {$ip['ip']}:3306 with timeout {$time}s" . PHP_EOL;
+        echo "Timeout on : " . $message . " after " . $time . " seconds." . PHP_EOL;
         $timer = $loop->addTimer($time, function () use (&$timedOut, $deferred, $ip) {
             echo "Connection to {$ip['ip']}:3306 timed out." . PHP_EOL;
             $deferred->resolve(false);
