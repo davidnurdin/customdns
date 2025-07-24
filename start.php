@@ -446,14 +446,14 @@ return $result ;
                                 });
 
 
-                                $nbTasks = count($tasks);
-                                $_CACHE[$data['infos']['domain']]['nbTasksResolv'] = 0 ;
+                                $_CACHE[$data['infos']['domain']]['nbTasksToResolve'] = count($tasks);
+                                $_CACHE[$data['infos']['domain']]['nbTasksResolved'] = 0 ;
                                 foreach ($tasks as $task) {
-                                    $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, $nbTasks, &$_CACHE, &$_TORESEND) {
+                                    $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND) {
                                         var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
                                         // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
-                                        $_CACHE[$data['infos']['domain']]['nbTasksResolv']++ ;
+                                        $_CACHE[$data['infos']['domain']]['nbTasksResolved']++ ;
                                         foreach ($taskDetails['NetworksAttachments'] as $netWork) {
                                             $ipRange = $netWork['Addresses'];
                                             $ip = explode('/', $ipRange[0])[0]; // Get the IP address part before the slash
@@ -461,7 +461,7 @@ return $result ;
                                         }
 
 
-                                        if ($_CACHE[$data['infos']['domain']]['nbTasksResolv'] == $nbTasks) {
+                                        if ($_CACHE[$data['infos']['domain']]['nbTasksResolved'] == $_CACHE[$data['infos']['domain']]['nbTasksToResolve']) {
                                             echo "All tasks resolved for service: " . $service['Spec']['Name'] . PHP_EOL;
                                             foreach ($_CACHE[$data['infos']['domain']]['ips'] as $displayIp) {
                                                 echo "IPs: " . $displayIp['ip'] . PHP_EOL;
