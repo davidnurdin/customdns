@@ -306,11 +306,11 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         // Étape 1 : Négociation SOCKS5 (no auth)
                         $proxy->write("\x05\x01\x00");
 
-                        $proxy->once('close', function () use ($timer2, $loop,$deferred) {
-                            $loop->cancelTimer($timer2);
-                            $deferred->resolve(false);
-                            echo "\n(2) Connexion fermée\n";
-                        });
+//                        $proxy->once('close', function () use ($timer2, $loop,$deferred) {
+//                            $loop->cancelTimer($timer2);
+//                            $deferred->resolve(false);
+//                            echo "\n(2) Connexion fermée\n";
+//                        });
 
 
                         $proxy->once('data', function ($data) use ($proxy, $deferred, $ip, $timer2, $loop) {
@@ -338,11 +338,11 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
 
                             $timer3 = $this->createTimeout(5, $loop, $deferred, "Connection(3) to {$ip['ip']}:3306");
-                            $proxy->once('close', function () use ($timer3, $loop,$deferred) {
-                                $loop->cancelTimer($timer3);
-                                $deferred->resolve(false);
-                                echo "\n(3) Connexion fermée\n";
-                            });
+//                            $proxy->once('close', function () use ($timer3, $loop,$deferred) {
+//                                $loop->cancelTimer($timer3);
+//                                $deferred->resolve(false);
+//                                echo "\n(3) Connexion fermée\n";
+//                            });
 
                             $proxy->once('data', function ($data) use ($proxy, $addr, $port, $deferred, $ip, $timer3, $loop) {
                                 $loop->cancelTimer($timer3);
