@@ -346,6 +346,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                             $proxy->once('data', function ($data) use ($proxy, $addr, $port, $deferred, $ip, $timer3, $loop) {
                                 $loop->cancelTimer($timer3);
+                                var_dump('SIZE DATA : ' . strlen($data) . ' DATA : ' . bin2hex($data));
+                                
                                 if (strlen($data) < 2 || $data[1] !== "\x00") {
                                     $hex = strtoupper(implode(' ', str_split(bin2hex($data), 2)));
                                     echo "[ERR] => Réponse du proxy SOCKS5 : " . $hex . "\n";
