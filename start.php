@@ -305,7 +305,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         $loop->cancelTimer($timer1);
 
                         // 2eme timer
-                        $timer2 = $this->createTimeout(5,$loop,$deferred,"Connection(1) to {$ip['ip']}:3306");
+                        $timer2 = $this->createTimeout(5,$loop,$deferred,"Connection(2) to {$ip['ip']}:3306");
                         // Étape 1 : Négociation SOCKS5 (no auth)
                         $proxy->write("\x05\x01\x00");
 
