@@ -296,8 +296,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         'unix' => true,
                     ]);
 
-
-
                     $timer1 = $this->createTimeout(5,$loop,$deferred,"Connection(1) to {$ip['ip']}:3306");
                     $unixSocketPath = '/var/run/dns-helper/helper.sock';
                     $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop,$deferred,$ip,$timer1) {
