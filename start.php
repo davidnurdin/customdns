@@ -80,6 +80,8 @@ class myResolver implements ResolverInterface
                 if ($_CACHE[$domain]['active']) {
                     foreach ($_CACHE[$domain]['ipsActive'] as $ip) {
 
+                        $client = explode(':', $client)[0] ?? null; // get the client IP without port
+
                         // get the real ip
                         var_dump($_CACHE[$domain]['ipNat'],$client);
                         die();
