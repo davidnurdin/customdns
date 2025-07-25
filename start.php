@@ -542,6 +542,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                                 // INSPECT NETWORK and connect only the network on same IP range of the requester
 
+                                                var_dump($network['NetworkID']);
+                                                die("ennnd");
+
                                                 $client->networkInspect($network['NetworkID'])->then(function (array $networkInspectInfo) use ($client, $service, $serviceName, $data, &$_CACHE, &$_TORESEND, $task,$network) {
 
                                                     var_dump($networkInspectInfo);
