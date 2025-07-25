@@ -292,6 +292,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
     {
         global $_CACHE;
 
+        // si $idTimer == null on veux le resultat le plus rapidement possible on peux meme renvoyé qu'une seule ip !
 
         echo "\n\nCALLXXXX FROM : " . $idTimer . "\n";
 
