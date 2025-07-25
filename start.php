@@ -511,7 +511,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             }
                             */
 
-                            
+
                             $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
