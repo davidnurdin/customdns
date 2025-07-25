@@ -545,7 +545,19 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     // search the client source in this list with same IPV4
                     if (explode('/',$containerInfos['IPv4Address'])[0] == explode(':',$data['infos']['client'])[0]) {
                         echo "Found client in docker_gwbridge network: " . $containerName . PHP_EOL; // container web
-                        $deferredRequester->resolve([$containerName,"10.0.2.25"]); // TODO !!!
+
+                        // search NetworkSettings of this container
+                        $clientGwInspect->containerInspect($containerName)->then(
+                            function (array $containerInfo)
+                            {
+                                
+
+                            },
+                            function (Exception $e) use ($deferredRequester) {
+                                echo 'Error inspecting container: ' . $e->getMessage() . PHP_EOL;
+
+
+                        // $deferredRequester->resolve([$containerName,"10.0.2.25"]); // TODO !!!
                     }
 
                 }
