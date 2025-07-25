@@ -562,7 +562,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                                 // Get the IP address of the container in this network
                                                 $containerIp = $networkInspectInfo['Containers'][$containerName]['IPv4Address'] ?? null;
-                                                echo "FOUND IP : " . explode('/',$containerIp)[0];
+                                                $containerIp = explode('/',$containerIp)[0];
+                                                $deferredRequester->resolve([$containerName, $containerIp]);
 
 
                                         // TODO : inspect this network , find container in "containers" and get real ip !
