@@ -498,7 +498,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 echo "Addr:" . $network['Addr'] . PHP_EOL;
 
                                 // ASK DNS HELPER to join NETWORK
-                                $client->networkConnect($network['NetworkID'], 'dns-helper', [
+                                $client->networkConnect($network['NetworkID'], 'dns_dns-helper.iobas33p8szcw7n7p6kl4swu4.gp2dsx1o0bndqmmpd2noswu09', [
                                     'EndpointConfig' => [
                                         'Aliases' => [$data['infos']['domain']]
                                     ]
