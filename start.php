@@ -490,7 +490,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             // search the client source in this list with same IPV4
                             if (explode('/',$containerInfos['IPv4Address'])[0] == explode(':',$data['infos']['client'])[0]) {
                                 echo "Found client in docker_gwbridge network: " . $containerName . PHP_EOL; // container web
-                                // TODO : faire la correspondance $client <> ip du container sur le meme réseau !
+                                // TODO : faire la correspondance $client <> ip du container sur le meme réseau ! => re ecrire : $data['infos']['client']
 
                             }
 
