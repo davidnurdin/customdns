@@ -288,7 +288,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
     }
 
 
-    public function rejectOrResolve($message,$idTimer,$deferred)
+    public function rejectOrResolveFalse($message,$idTimer,$deferred)
     {
         if ($idTimer === null)
             $deferred->reject(new \Exception($message));
