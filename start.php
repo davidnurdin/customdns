@@ -25,6 +25,7 @@ include 'src/Resolvers/ResolverInterface.php';
 // autoload
 include 'vendor/autoload.php';
 
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
 class myResolver implements ResolverInterface
 {
