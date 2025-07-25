@@ -269,7 +269,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         return $timer;
     }
 
-    public function dataFromProxy($chunk,$loop,$proxy,$deferred,$timer = null)
+    public function dataFromProxy($chunk,$loop,$proxy,$deferred,$timer = null,$idTimer = null)
     {
         var_dump('(2) SIZE DATA : ' . strlen($chunk) . ' DATA : ' . bin2hex($chunk));
         // echo $chunk;
@@ -279,6 +279,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         echo "Received data from proxy: " . substr($chunk, 0, 50) . "...\n"; // Affiche les 50 premiers caractères
         $proxy->close();
         if (strlen($chunk) > 5) {
+            // si $idTimer == null on veux le resultat le plus rapidement possible on peux meme renvoyé qu'une seule ip !
+
             echo "Data received successfully, connection is good.\n";
             $deferred->resolve(true);
         } else {
@@ -298,7 +300,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $promises = [];
         foreach ($_CACHE[$domain]['ips'] as $ip) {
             $promises[] = \React\Promise\resolve($ip['canBeJoin'] ?? null)
-                ->then(function ($canBeJoin) use ($ip, $domain) {
+                ->then(function ($canBeJoin) use ($ip, $domain,$idTimer) {
 
                     echo "Check connectivity for IP: " . $ip['ip'] . " in domain: " . $domain . ' actuel is ' . var_export($canBeJoin, true) . PHP_EOL;
 
@@ -316,7 +318,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                     $timer1 = $this->createTimeout(2, $loop, $deferred, "Connection(1) to {$ip['ip']}:3306");
                     $unixSocketPath = '/var/run/dns-helper/helper.sock';
-                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop, $deferred, $ip, $timer1) {
+                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop, $deferred, $ip, $timer1,$idTimer) {
                         echo "Connecté à la socket Unix SOCKS5\n";
                         $loop->cancelTimer($timer1);
 
@@ -332,7 +334,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                        });
 
 
-                        $proxy->once('data', function ($data) use ($proxy, $deferred, $ip, $timer2, $loop) {
+                        $proxy->once('data', function ($data) use ($proxy, $deferred, $ip, $timer2, $loop,$idTimer) {
                             $loop->cancelTimer($timer2);
                             if ($data !== "\x05\x00") {
                                 $proxy->close();
@@ -363,7 +365,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                echo "\n(3) Connexion fermée\n";
 //                            });
 
-                            $proxy->once('data', function ($data) use ($proxy, $addr, $port, $deferred, $ip, $timer3, $loop) {
+                            $proxy->once('data', function ($data) use ($proxy, $addr, $port, $deferred, $ip, $timer3, $loop,$idTimer) {
                                 $loop->cancelTimer($timer3);
                                 var_dump('(1) SIZE DATA : ' . strlen($data) . ' DATA : ' . bin2hex($data));
 
@@ -380,7 +382,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 if (strlen($data) > 10) {
                                     // restant de la requete
                                     $remainingData = substr($data, 10);
-                                    $this->dataFromProxy($remainingData,$loop,$proxy,$deferred,null) ;
+                                    $this->dataFromProxy($remainingData,$loop,$proxy,$deferred,null,$idTimer) ;
 
                                 }
                                 echo "Connexion à " . $addr . ":" . $port . " établie via SOCKS5\n";
