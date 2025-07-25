@@ -495,10 +495,11 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             // get the networks
                             foreach ($services['Endpoint']['VirtualIPs'] as $network) {
                                 echo "Network: " . $network['NetworkID'] . PHP_EOL;
+                                echo 
                             }
 
                             die("end");
-                            
+
 
                             $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
