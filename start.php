@@ -263,7 +263,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         echo "Timeout on : " . $message . " after " . $time . " seconds." . PHP_EOL;
         $timer = $loop->addTimer($time, function () use ($deferred, $message, $time) {
             echo "Timeout is CATCH on " . $message . " after " . $time . " seconds." . PHP_EOL;
-            $deferred->resolve(false);
+            $deferred->reject("Timeout : " . $message);
         });
 
         return $timer;
@@ -283,7 +283,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             $deferred->resolve(true);
         } else {
             echo "Data received is too short, connection might not be good.\n";
-            $deferred->resolve(false);
+            $deferred->reject("Data too short");
         }
     }
 
@@ -338,7 +338,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 $proxy->close();
                                 echo "Proxy SOCKS5 : méthode non supportée ou erreur\n";
                                 echo "Connection(2) to {$ip['ip']}:3306 not support." . PHP_EOL;
-                                $deferred->resolve(false);
+                                $deferred->reject("Timeout(2)");
                                 return;
                             }
 
@@ -372,7 +372,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     echo "[ERR] => Réponse du proxy SOCKS5 : " . $hex . "\n";
                                     echo "Connexion refusée ou erreur SOCKS5\n";
                                     echo "Connection(3) to {$ip['ip']}:3306 connexion refuse." . PHP_EOL;
-                                    $deferred->resolve(false);
+                                    $deferred->reject("Timeout(3)");
                                     $proxy->close();
                                     return;
                                 }
@@ -403,7 +403,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         });
                     }, function (Exception $e) use ($deferred) {
                         // defered false
-                        $deferred->resolve(false);
+                        $deferred->reject("E4");
                         echo "|||||||||||||| Échec de connexion à la socket Unix : " . $e->getMessage() . "\n";
                     });
 
