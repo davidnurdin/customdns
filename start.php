@@ -554,7 +554,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 {
                                     if ($networkName !== 'ingress')
                                     {
-                                        
+                                        echo "Found network: " . $networkName . " for container: " . $networkName . PHP_EOL;
+
                                     }
                                 }
 
