@@ -637,7 +637,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
 
                 $this->getDnsHelperContainerId()->then(function ($dnsHelperContainerId) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                $this->getRequesterAsync($serviceName,$data)->then(function ($infos) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                $this->getRequesterAsync($serviceName,$data)->then(function ($infos) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND,$dnsHelperContainerId) {
                     [$resolverClientContainerId,$ipAsker] = $infos ;
 
                     echo "=======||||||||||||||||||||||||||||========== " .  $ipAsker . " on the container : " . $resolverClientContainerId . " has ask for service : " . $serviceName . PHP_EOL;
