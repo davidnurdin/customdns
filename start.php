@@ -554,10 +554,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         $deferredRequester->resolve($container['Id']);
                         return;
                     }
-                    echo "Found DNS Helper container: " . $container['Id'] . PHP_EOL;
-                    // Resolve the promise with the container ID
-                    $deferredRequester->resolve($container['Id']);
-                    return;
                 }
             }
             $deferredRequester->resolve($listContainer);
