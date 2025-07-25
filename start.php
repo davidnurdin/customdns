@@ -485,7 +485,11 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $clientGwInspect->networkInspect('docker_gwbridge')->then(
                     function (array $network) use ($clientGwInspect, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                         // Check if the network is active
-                        $network['']
+                        foreach ( $network['Containers'] as $container)
+                        {
+                            // search the client source in this list
+                            
+                        }
                     },
                     function (Exception $e) {
                         echo 'Error inspecting network: ' . $e->getMessage() . PHP_EOL;
