@@ -485,10 +485,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $clientGwInspect->networkInspect('docker_gwbridge')->then(
                     function (array $network) use ($clientGwInspect, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                         // Check if the network is active
-                        foreach ( $network['Containers'] as $container)
+                        foreach ( $network['Containers'] as $containerName => $containerInfos)
                         {
                             // search the client source in this list with same IPV4
-                            
+                            if ($containerInfos[''])
 
                         }
                     },
