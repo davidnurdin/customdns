@@ -645,12 +645,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     $_CACHE[$data['infos']['domain']]['ipNat'][$ipClient] = $ipAsker; // store the IP of the container on the same network
 
                     $client = new Clue\React\Docker\Client();
-                    $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker) {
+                    $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$dnsHelperContainerId) {
                         foreach ($services as $service) {
                             if ($service['Spec']['Name'] == $serviceName) {
 
 
-                                $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker) {
+                                $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$dnsHelperContainerId) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
                                     // filter task get only Running AND have Addresses
@@ -666,7 +666,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     $_CACHE[$data['infos']['domain']]['networks'] = [];
 
                                     foreach ($tasks as $task) {
-                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName,$resolverClientContainerId,$ipAsker) {
+                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName,$resolverClientContainerId,$ipAsker,$dnsHelperContainerId) {
                                             var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
 
@@ -679,7 +679,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 // INSPECT NETWORK and connect only the network on same IP range of the requester
 
 
-                                                $client->networkInspect($network['NetworkID'])->then(function (array $networkInspectInfo) use ($client, $service, $serviceName, $data, &$_CACHE, &$_TORESEND, $task,$network,$resolverClientContainerId) {
+                                                $client->networkInspect($network['NetworkID'])->then(function (array $networkInspectInfo) use ($client, $service, $serviceName, $data, &$_CACHE, &$_TORESEND, $task,$network,$resolverClientContainerId,$dnsHelperContainerId) {
 
                                                     if (!isset($_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']])) {
 
