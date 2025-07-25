@@ -508,6 +508,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                             })->otherwise(function (Exception $e) {
                                                 echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
                                             });
+                                            die();
+                                            
                                             $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
                                         }
 
