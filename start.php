@@ -510,8 +510,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $this->getRequesterAsync($serviceName,$data)->then(function ($infos) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                     [$resolverClientContainerId,$ipAsker] = $infos ;
 
-                    echo $ipAsker . "on the container : " . $resolverClientContainerId . "has ask for service : " . $serviceName . PHP_EOL;
-                    
+                    echo "=======||||||||||||||||||||||||||||==========" .  $ipAsker . "on the container : " . $resolverClientContainerId . "has ask for service : " . $serviceName . PHP_EOL;
+
                     $client = new Clue\React\Docker\Client();
                     $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId) {
                         foreach ($services as $service) {
