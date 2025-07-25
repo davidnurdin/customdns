@@ -81,7 +81,7 @@ class myResolver implements ResolverInterface
                     foreach ($_CACHE[$domain]['ipsActive'] as $ip) {
 
                         // get the real ip
-                        var_dump($_CACHE[$domain]['ipNat']);
+                        var_dump($_CACHE[$domain]['ipNat'],$client);
                         die();
 
                         $realIp = $_CACHE[$domain]['ipNat'][$client] ;
