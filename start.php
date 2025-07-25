@@ -354,7 +354,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         $promises = [];
 
-        /*
+
         $ipsFiltered = array_filter($_CACHE[$domain]['ips'] ?? [], function ($ip) use ($domain,$ipAsker) {
             if (!$ipAsker)
                 return true ;
@@ -372,9 +372,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         var_dump($domain,$ipAsker);
         var_dump($ipsFiltered);
         die();
-        */
 
-        foreach ($_CACHE[$domain]['ips'] as $ip) {
+        foreach ($ipsFiltered as $ip) {
             $promises[] = \React\Promise\resolve($ip['canBeJoin'] ?? null)
                 ->then(function ($canBeJoin) use ($ip, $domain,$idTimer) {
 
