@@ -549,7 +549,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     if (str_starts_with($container['Labels']['com.docker.swarm.task.name'] ,  $myNameSpace. '_dns-helper.'))
                     {
                         // Found the DNS Helper container
-                        echo "Found DNS Helper container: " . $container['Id'] . PHP_EOL;
+                        echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Found DNS Helper container: " . $container['Id'] . PHP_EOL;
                         // Resolve the promise with the container ID
                         $deferredRequester->resolve($container['Id']);
                         return;
