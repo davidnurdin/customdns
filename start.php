@@ -540,7 +540,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $client->containerList()->then(function ($listContainer) use ($deferredRequester)
         {
 
-            var_dump($listContainer);
+            // var_dump($listContainer);
             foreach ($listContainer as $container)
             {
                 $myNameSpace = 'dns' ;
