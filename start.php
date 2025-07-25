@@ -481,11 +481,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $_CACHE[$data['infos']['domain']]['active'] = false;
 
 
-                // need to join the network in dns helper !
-                echo "JOIN DNS HELPER TO NETWORK : " ; // TODO
-
-                // TODO filtré utilisé le meme réseau que la source !
-
 
                 $client = new Clue\React\Docker\Client();
                 $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
