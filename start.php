@@ -507,23 +507,21 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $_CACHE[$data['infos']['domain']]['active'] = false;
 
 
+                $this->getRequesterAsync($serviceName,$data)->then(function ($resolverClient) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+
+                    $client = new Clue\React\Docker\Client();
+                    $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                        foreach ($services as $service) {
+                            if ($service['Spec']['Name'] == $serviceName) {
 
 
-                $client = new Clue\React\Docker\Client();
-                $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                    foreach ($services as $service) {
-                        if ($service['Spec']['Name'] == $serviceName) {
-
-
-
-                            $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                                $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
                                     // filter task get only Running AND have Addresses
                                     $tasks = array_filter($tasks, function ($task) {
                                         return $task['Status']['State'] == 'running' && isset($task['NetworksAttachments'][0]['Addresses']);
                                     });
-
 
 
                                     // var_dump($data['infos']['client']);die();
@@ -533,7 +531,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     $_CACHE[$data['infos']['domain']]['networks'] = [];
 
                                     foreach ($tasks as $task) {
-                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND,$client,$task,$serviceName) {
+                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName) {
                                             var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
 
@@ -572,7 +570,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 }
 
 
-                                                $this->testIpConnectivity($data['infos']['domain'],null)
+                                                $this->testIpConnectivity($data['infos']['domain'], null)
                                                     ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND) {
                                                         // Update the cache with the connectivity results
                                                         echo "=========+> SET ACTIVE DOMAIN : " . $data['infos']['domain'] . PHP_EOL;
@@ -613,17 +611,21 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                         echo PHP_EOL;
                                     }
 
-                            })->otherwise(function (Exception $e) {
-                                echo 'Error listing tasks: ' . $e->getMessage() . PHP_EOL;
-                            });
+                                })->otherwise(function (Exception $e) {
+                                    echo 'Error listing tasks: ' . $e->getMessage() . PHP_EOL;
+                                });
+                            }
+
                         }
+                    }, function (Exception $e) {
+                        echo 'Error: ' . $e->getMessage() . PHP_EOL;
+                    });
 
-                    }
-                }, function (Exception $e) {
-                    echo 'Error: ' . $e->getMessage() . PHP_EOL;
-                });
+                    unset($_TORESOLVE[$domain]);
 
-                unset($_TORESOLVE[$domain]);
+                }
+
+              ) ;
 
 
             }
