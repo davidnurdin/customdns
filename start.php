@@ -288,6 +288,15 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
     }
 
 
+    public function rejectOrResolve($message,$idTimer,$deferred)
+    {
+        if ($idTimer === null)
+            $deferred->reject(new \Exception($message));
+        else
+            $deferred->resolve(false);
+
+    }
+
     public function testIpConnectivity($domain, string $idTimer = null)
     {
         global $_CACHE;
