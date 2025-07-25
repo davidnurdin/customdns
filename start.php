@@ -83,7 +83,7 @@ class myResolver implements ResolverInterface
                         // get the real ip
                         var_dump($_CACHE[$domain]['ipNat']);
                         die();
-                        
+
                         $realIp = $_CACHE[$domain]['ipNat'][$client] ;
 
                         // send only IP on same network of the client
