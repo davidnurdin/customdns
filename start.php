@@ -507,11 +507,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $_CACHE[$data['infos']['domain']]['active'] = false;
 
 
-                $this->getRequesterAsync($serviceName,$data)->then(function ($resolverClient) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                $this->getRequesterAsync($serviceName,$data)->then(function ($resolverClientContainerId) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
 
-                    var_dump($resolverClient);
-                    die();
-                    
                     $client = new Clue\React\Docker\Client();
                     $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                         foreach ($services as $service) {
