@@ -491,6 +491,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     foreach ($services as $service) {
                         var_dump($services);die();
 
+                        
                         $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                             if ($service['Spec']['Name'] == $serviceName) {
                                 echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
