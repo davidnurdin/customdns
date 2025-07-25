@@ -59,33 +59,35 @@ class myResolver implements ResolverInterface
         return ($ipLong & $mask) === ($networkLong & $mask);
     }
 
-    public function isSameRange($ipToSend,$ipSource,$networks)
+    public function isSameRange($ipToSend, $ipSource, $networks)
     {
-        // Check if the IP to send is in the same range as the source IP
-        // $ipToSend is the IP of the task, $ipSource is the real IP of the client
-        // $networks is an array of networks to check
-
+        // Si pas de réseaux définis, on considère que c’est autorisé
         if (empty($networks)) {
-            return true; // No networks to check, assume it's the same range
+            return true;
         }
 
         foreach ($networks as $network) {
             if (str_contains($network, '/')) {
                 // CIDR notation
                 list($networkIp, $cidr) = explode('/', $network);
-                if ($this->isInCidrRange($ipToSend, $networkIp, (int)$cidr)) {
-                    return true;
+
+                if ($this->isInCidrRange($ipSource, $networkIp, (int)$cidr)) {
+                    // Si l'ipSource est dans ce réseau, on teste si ipToSend aussi
+                    return $this->isInCidrRange($ipToSend, $networkIp, (int)$cidr);
                 }
             } else {
-                // Single IP address
-                if ($ipToSend === $network) {
-                    return true;
+                // Cas d'une IP exacte
+                if ($ipSource === $network) {
+                    return $ipToSend === $network;
                 }
             }
         }
 
+        // Aucun réseau ne correspond à l'ipSource
         return false;
     }
+
+    
     public function getAnswerAsync(array $queries, ?string $client = null, ?Deferred $deferred = null): \React\Promise\PromiseInterface
     {
         global $_CACHE, $_TORESOLVE, $_TORESEND;
