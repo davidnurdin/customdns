@@ -548,13 +548,22 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                         // search NetworkSettings of this container
                         $clientGwInspect->containerInspect($containerName)->then(
-                            function (array $containerInfo)
+                            function (array $containerInfo) use ($clientGwInspect,$containerName,$deferredRequester)
                             {
                                 foreach ( $containerInfo['NetworkSettings']['Networks'] as $networkName => $networkInfo)
                                 {
                                     if ($networkName !== 'ingress')
                                     {
                                         echo "Found network: " . $networkName . " for container: " . $networkName . PHP_EOL;
+
+                                        $clientGwInspect->networkInspect($networkName)->then(
+                                            function (array $networkInspectInfo) use ($clientGwInspect, $containerName, $networkName, $deferredRequester) {
+                                                echo "Network " . $networkName . " inspected for container: " . $containerName . PHP_EOL;
+
+                                                // TODO : inspect this network , find container in "containers" and get real ip !
+                                                // On peut faire un resolve avec le containerName et l'IP du client
+                                                // $deferredRequester->resolve([$containerName,$networkInspectInfo['Containers'][$containerName]['IPv4Address']]);
+                                                $deferredRequester->resolve([$containerName,$networkInspectInfo['Containers'][$containerName]['IPv4Address']]);
 
                                         // TODO : inspect this network , find container in "containers" and get real ip !
                                     }
