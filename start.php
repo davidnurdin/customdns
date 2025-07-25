@@ -510,12 +510,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $this->getRequesterAsync($serviceName,$data)->then(function ($resolverClientContainerId) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
 
                     $client = new Clue\React\Docker\Client();
-                    $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                    $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId) {
                         foreach ($services as $service) {
                             if ($service['Spec']['Name'] == $serviceName) {
 
 
-                                $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                                $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
                                     // filter task get only Running AND have Addresses
@@ -531,7 +531,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     $_CACHE[$data['infos']['domain']]['networks'] = [];
 
                                     foreach ($tasks as $task) {
-                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName) {
+                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName,$resolverClientContainerId) {
                                             var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
 
@@ -543,22 +543,27 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 // INSPECT NETWORK and connect only the network on same IP range of the requester
 
 
-                                                $client->networkInspect($network['NetworkID'])->then(function (array $networkInspectInfo) use ($client, $service, $serviceName, $data, &$_CACHE, &$_TORESEND, $task,$network) {
+                                                $client->networkInspect($network['NetworkID'])->then(function (array $networkInspectInfo) use ($client, $service, $serviceName, $data, &$_CACHE, &$_TORESEND, $task,$network,$resolverClientContainerId) {
 
-                                                    var_dump($networkInspectInfo);
-                                                    die("kkkkkkkk");
 
-                                                    echo "Network: " . $network['NetworkID'] . PHP_EOL;
-                                                    echo "Addr:" . $network['Addr'] . PHP_EOL;
-                                                    echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $task['Status']['ContainerStatus']['ContainerID'] . PHP_EOL;
-                                                    // ASK DNS HELPER to join NETWORK
-                                                    $client->networkConnect($network['NetworkID'], $task['Status']['ContainerStatus']['ContainerID'])->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                                                        echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
-                                                    })->otherwise(function (Exception $e) {
-                                                        echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
-                                                    });
+                                                    foreach ($networkInspectInfo['Containers'] as $searchingSourceContainerID => $searchingSourceContainerInfo) {
 
-                                                    $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
+                                                        if ($searchingSourceContainerID == $resolverClientContainerId) {
+                                                            echo "Network: " . $network['NetworkID'] . PHP_EOL;
+                                                            echo "Addr:" . $network['Addr'] . PHP_EOL;
+                                                            echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $task['Status']['ContainerStatus']['ContainerID'] . PHP_EOL;
+                                                            // ASK DNS HELPER to join NETWORK
+                                                            $client->networkConnect($network['NetworkID'], $task['Status']['ContainerStatus']['ContainerID'])->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                                                                echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
+                                                            })->otherwise(function (Exception $e) {
+                                                                echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
+                                                            });
+
+                                                            $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
+                                                        }
+
+                                                    }
+
 
                                                 });
 
