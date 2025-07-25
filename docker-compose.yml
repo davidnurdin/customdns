@@ -70,7 +70,7 @@ services:
             source: /var/run/docker.sock
             target: /var/run/docker.sock
           - socketShare:/var/run/dns-helper
-          - ./start.php:/app/start.php
+          # only in dev ! - ./start.php:/app/start.php
         networks:
           - host
         deploy:
