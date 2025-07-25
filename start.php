@@ -425,7 +425,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         if ($idTimer === null)
         {
-            $result = \React\Promise\any($promises)->then(function ($results) use ($domain, &$_CACHE) {
+            $result = \React\Promise\race($promises)->then(function ($results) use ($domain, &$_CACHE) {
 
                 var_dump($results);
                 die();
