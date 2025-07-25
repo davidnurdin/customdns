@@ -481,46 +481,47 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $_CACHE[$data['infos']['domain']]['active'] = false;
 
 
-                $clientGwInspect = new Clue\React\Docker\Client();
-                $clientGwInspect->networkInspect('docker_gwbridge')->then(
-                    function (array $network) use ($clientGwInspect, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                        // Check if the network is active
-                        foreach ( $network['Containers'] as $containerID => $containerInfos)
-                        {
-                            // search the client source in this list with same IPV4
-                            if (explode('/',$containerInfos['IPv4Address'])[0] == explode(':',$data['infos']['client'])[0]) {
-
-
-                                echo "Found client in docker_gwbridge network: " . $containerID . PHP_EOL;
-
-                                // get the networks and connect to it : todo : exclude ingress?
-                                // TODO : ne connect que si le current node est bien le meme !
-                                echo "Network: " . $network['NetworkID'] . PHP_EOL;
-                                echo "Addr:" . $network['Addr'] . PHP_EOL;
-                                echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $containerID . PHP_EOL;
-                                // ASK DNS HELPER to join NETWORK
-                                $client->networkConnect($network['NetworkID'], $task['Status']['ContainerStatus']['ContainerID'])->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                                    echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
-                                })->otherwise(function (Exception $e) {
-                                    echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
-                                });
-
-                                $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
-
-                            }
-
-                        }
-                    },
-                    function (Exception $e) {
-                        echo 'Error inspecting network: ' . $e->getMessage() . PHP_EOL;
-                    }
-                );
-
 
                 $client = new Clue\React\Docker\Client();
                 $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                     foreach ($services as $service) {
                         if ($service['Spec']['Name'] == $serviceName) {
+
+
+                            $clientGwInspect = new Clue\React\Docker\Client();
+                            $clientGwInspect->networkInspect('docker_gwbridge')->then(
+                                function (array $network) use ($clientGwInspect, $serviceName, $data, &$_CACHE, &$_TORESEND,$client,$service) {
+                                    // Check if the network is active
+                                    foreach ( $network['Containers'] as $containerID => $containerInfos)
+                                    {
+                                        // search the client source in this list with same IPV4
+                                        if (explode('/',$containerInfos['IPv4Address'])[0] == explode(':',$data['infos']['client'])[0]) {
+
+                                            echo "Found client in docker_gwbridge network: " . $containerID . PHP_EOL;
+
+                                            // get the networks and connect to it : todo : exclude ingress?
+                                            // TODO : ne connect que si le current node est bien le meme !
+                                            echo "Network: " . $network['NetworkID'] . PHP_EOL;
+                                            echo "Addr:" . $network['Addr'] . PHP_EOL;
+                                            echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $containerID . PHP_EOL;
+                                            // ASK DNS HELPER to join NETWORK
+                                            $client->networkConnect($network['NetworkID'], $containerID)->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                                                echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
+                                            })->otherwise(function (Exception $e) {
+                                                echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
+                                            });
+
+                                            $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
+
+                                        }
+
+                                    }
+                                },
+                                function (Exception $e) {
+                                    echo 'Error inspecting network: ' . $e->getMessage() . PHP_EOL;
+                                }
+                            );
+
 
 
 
