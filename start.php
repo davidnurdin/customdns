@@ -541,6 +541,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         {
 
             var_dump($listContainer);
+            foreach ($listContainer as $container)
+            {
+                if ($container['Labels'][])
+            }
             $deferredRequester->resolve($listContainer);
 
         });
