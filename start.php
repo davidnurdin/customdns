@@ -547,7 +547,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 $client->networkInspect($network['NetworkID'])->then(function (array $networkInspectInfo) use ($client, $service, $serviceName, $data, &$_CACHE, &$_TORESEND, $task,$network,$resolverClientContainerId) {
 
                                                     if (!isset($_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']])) {
-                                                        // On se connecte dans le réseau qui est aussi dans le réseau du demandeur
                                                         echo "Network: " . $network['NetworkID'] . PHP_EOL;
                                                         echo "Addr:" . $network['Addr'] . PHP_EOL;
                                                         echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $task['Status']['ContainerStatus']['ContainerID'] . PHP_EOL;
