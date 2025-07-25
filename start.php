@@ -360,6 +360,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             return $this->resolver->isSameRange($ip,$ipAsker, $_CACHE[$domain]['networks'] ?? []);
         });
 
+
+        var_dump($ipsFiltered);
+        die();
+        
         foreach ($ipsFiltered as $ip) {
             $promises[] = \React\Promise\resolve($ip['canBeJoin'] ?? null)
                 ->then(function ($canBeJoin) use ($ip, $domain,$idTimer) {
