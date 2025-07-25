@@ -561,7 +561,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 echo "Network " . $networkName . " inspected for container: " . $containerName . PHP_EOL;
 
                                                 // Get the IP address of the container in this network
-                                                
+                                                $containerIp = $networkInspectInfo['Containers'][$containerName]['IPv4Address'] ?? null;
+                                                echo "FOUND IP : " . $containerIp;
+
 
                                         // TODO : inspect this network , find container in "containers" and get real ip !
                                     });
