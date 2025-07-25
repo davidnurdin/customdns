@@ -354,8 +354,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         $promises = [];
 
-        $ipsFiltered = array_filter($_CACHE[$domain]['ips'] ?? [], function ($ip) use ($domain) {
-            if ($this->resolver->isSameRange($ip,$realIp, $_CACHE[$domain]['networks'] ?? [])) {
+        $ipsFiltered = array_filter($_CACHE[$domain]['ips'] ?? [], function ($ip) use ($domain,$ipAsker) {
+            if ($this->resolver->isSameRange($ip,$ipAsker, $_CACHE[$domain]['networks'] ?? [])) {
 
             }
         });
