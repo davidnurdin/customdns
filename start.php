@@ -533,6 +533,21 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         return $result;
     }
 
+    public function getDnsHelperContainerId()
+    {
+        $deferredRequester = new Deferred();
+        $client = new Clue\React\Docker\Client();
+        $client->containerList()->then(function ($listContainer) use ($deferredRequester)
+        {
+
+            var_dump($listContainer);
+            $deferredRequester->resolve($listContainer);
+
+        });
+
+        return $deferredRequester->promise();
+
+    }
     public function getRequesterAsync($serviceName,$data)
     {
         $deferredRequester = new Deferred();
@@ -606,6 +621,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $_CACHE[$data['infos']['domain']]['active'] = false;
 
 
+                $this->getDnsHelperContainerId()->then(function ($dnsHelperContainerId) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                 $this->getRequesterAsync($serviceName,$data)->then(function ($infos) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                     [$resolverClientContainerId,$ipAsker] = $infos ;
 
@@ -655,9 +671,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                         // On place Dns Helper dans le réseau (ceci est appelé sur les 3 node , normal d'avoir des not found)
                                                         echo "Network: " . $network['NetworkID'] . PHP_EOL;
                                                         echo "Addr:" . $network['Addr'] . PHP_EOL;
-                                                        echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $task['Status']['ContainerStatus']['ContainerID'] . PHP_EOL;
+                                                        echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $dnsHelperContainerId . PHP_EOL;
                                                         // ASK DNS HELPER to join NETWORK
-                                                        $client->networkConnect($network['NetworkID'], $task['Status']['ContainerStatus']['ContainerID'])->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                                                        $client->networkConnect($network['NetworkID'], $dnsHelperContainerId)->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                                                             echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
                                                         })->otherwise(function (Exception $e) {
                                                             echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
@@ -776,6 +792,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 }
 
               ) ;
+                });
 
 
             }
