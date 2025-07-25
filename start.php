@@ -361,6 +361,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         });
 
 
+        var_dump($domain,$ipAsker);
         var_dump($ipsFiltered);
         die();
 
