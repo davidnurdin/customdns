@@ -546,9 +546,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                                 $client->networkInspect($network['NetworkID'])->then(function (array $networkInspectInfo) use ($client, $service, $serviceName, $data, &$_CACHE, &$_TORESEND, $task,$network,$resolverClientContainerId) {
 
-
-
-                                                    /*
                                                     if (!isset($_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']])) {
                                                         // On se connecte dans le réseau qui est aussi dans le réseau du demandeur
                                                         echo "Network: " . $network['NetworkID'] . PHP_EOL;
@@ -563,8 +560,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                                         $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
                                                     }
-*/
 
+                                                    /*
                                                     foreach ($networkInspectInfo['Containers'] as $searchingSourceContainerID => $searchingSourceContainerInfo)
                                                     {
 
@@ -590,6 +587,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                         }
 
                                                     }
+                                                    */
 
 
                                                 });
@@ -615,7 +613,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
 
                                                 // met a jour l'ip du demandeur (par défaut il utilise l'ip 172.xxx)
-                                                
+                                                //$data['infos']['client']
 
 
                                                 $this->testIpConnectivity($data['infos']['domain'], null)
