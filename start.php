@@ -491,6 +491,20 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             if (explode('/',$containerInfos['IPv4Address'])[0] == explode(':',$data['infos']['client'])[0]) {
                                 echo "Found client in docker_gwbridge network: " . $containerName . PHP_EOL;
 
+                                // get the networks and connect to it : todo : exclude ingress?
+                                // TODO : ne connect que si le current node est bien le meme !
+                                echo "Network: " . $network['NetworkID'] . PHP_EOL;
+                                echo "Addr:" . $network['Addr'] . PHP_EOL;
+                                echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $task['Status']['ContainerStatus']['ContainerID'] . PHP_EOL;
+                                // ASK DNS HELPER to join NETWORK
+                                $client->networkConnect($network['NetworkID'], $task['Status']['ContainerStatus']['ContainerID'])->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                                    echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
+                                })->otherwise(function (Exception $e) {
+                                    echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
+                                });
+
+                                $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
+
                             }
 
                         }
@@ -529,21 +543,21 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                             var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
 
-                                            // get the networks and connect to it : todo : exclude ingress?
-                                            // TODO : ne connect que si le current node est bien le meme !
-                                            foreach ($service['Endpoint']['VirtualIPs'] as $network) {
-                                                echo "Network: " . $network['NetworkID'] . PHP_EOL;
-                                                echo "Addr:" . $network['Addr'] . PHP_EOL;
-                                                echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $task['Status']['ContainerStatus']['ContainerID'] . PHP_EOL;
-                                                // ASK DNS HELPER to join NETWORK
-                                                $client->networkConnect($network['NetworkID'], $task['Status']['ContainerStatus']['ContainerID'])->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                                                    echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
-                                                })->otherwise(function (Exception $e) {
-                                                    echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
-                                                });
-
-                                                $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
-                                            }
+//                                            // get the networks and connect to it : todo : exclude ingress?
+//                                            // TODO : ne connect que si le current node est bien le meme !
+//                                            foreach ($service['Endpoint']['VirtualIPs'] as $network) {
+//                                                echo "Network: " . $network['NetworkID'] . PHP_EOL;
+//                                                echo "Addr:" . $network['Addr'] . PHP_EOL;
+//                                                echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $task['Status']['ContainerStatus']['ContainerID'] . PHP_EOL;
+//                                                // ASK DNS HELPER to join NETWORK
+//                                                $client->networkConnect($network['NetworkID'], $task['Status']['ContainerStatus']['ContainerID'])->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+//                                                    echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
+//                                                })->otherwise(function (Exception $e) {
+//                                                    echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
+//                                                });
+//
+//                                                $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
+//                                            }
 
                                             // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
                                             $_CACHE[$data['infos']['domain']]['nbTasksResolved']++;
