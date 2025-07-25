@@ -50,6 +50,15 @@ class myResolver implements ResolverInterface
         return [false, null, null];
     }
 
+    public function isInCidrRange($ip, $network, $cidr)
+    {
+        // Check if the IP is in the CIDR range
+        $ipLong = ip2long($ip);
+        $networkLong = ip2long($network);
+        $mask = -1 << (32 - $cidr);
+        return ($ipLong & $mask) === ($networkLong & $mask);
+    }
+
     public function isSameRange($ipToSend,$ipSource,$networks)
     {
         // Check if the IP to send is in the same range as the source IP
@@ -61,7 +70,7 @@ class myResolver implements ResolverInterface
         }
 
         foreach ($networks as $network) {
-            if (strpos($network, '/') !== false) {
+            if (str_contains($network, '/')) {
                 // CIDR notation
                 list($networkIp, $cidr) = explode('/', $network);
                 if ($this->isInCidrRange($ipToSend, $networkIp, (int)$cidr)) {
