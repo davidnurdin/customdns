@@ -80,6 +80,9 @@ class myResolver implements ResolverInterface
                 if ($_CACHE[$domain]['active']) {
                     foreach ($_CACHE[$domain]['ipsActive'] as $ip) {
 
+                        // get the real ip
+                        $realIp = $_CACHE[$domain]['ipNat'][$client] ;
+                        
                         // send only IP on same network of the client
                         // if ($this->isSameRange($ip['ip'],$_CACHE
 
@@ -602,7 +605,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                             }
 
 
-                                            // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
                                             $_CACHE[$data['infos']['domain']]['nbTasksResolved']++;
                                             foreach ($taskDetails['NetworksAttachments'] as $netWork) {
                                                 $ipRange = $netWork['Addresses'];
