@@ -542,6 +542,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                     echo "IPs: " . $displayIp['ip'] . PHP_EOL;
                                                 }
 
+                                                $data['infos']['domain']['originalClientAsker'] = $client ;
 
                                                 $this->testIpConnectivity($data['infos']['domain'],null)
                                                     ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND) {
