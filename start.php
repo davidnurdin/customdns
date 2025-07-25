@@ -199,7 +199,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
     public function emptyCache()
     {
-       // return; // TODO : voir
+        return; // TODO : voir
 
         global $_CACHE;
         // Empty the cache every 20 seconds
