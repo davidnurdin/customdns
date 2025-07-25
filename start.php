@@ -298,7 +298,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $promises = [];
         foreach ($_CACHE[$domain]['ips'] as $ip) {
             $promises[] = \React\Promise\resolve($ip['canBeJoin'] ?? null)
-                ->then(function ($canBeJoin) use ($ip, $domain) {
+                ->then(function ($canBeJoin) use ($ip, $domain,$idTimer) {
 
                     echo "Check connectivity for IP: " . $ip['ip'] . " in domain: " . $domain . ' actuel is ' . var_export($canBeJoin, true) . PHP_EOL;
 
@@ -316,7 +316,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                     $timer1 = $this->createTimeout(2, $loop, $deferred, "Connection(1) to {$ip['ip']}:3306");
                     $unixSocketPath = '/var/run/dns-helper/helper.sock';
-                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop, $deferred, $ip, $timer1) {
+                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop, $deferred, $ip, $timer1,$idTimer) {
                         echo "Connecté à la socket Unix SOCKS5\n";
                         $loop->cancelTimer($timer1);
 
@@ -332,13 +332,17 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                        });
 
 
-                        $proxy->once('data', function ($data) use ($proxy, $deferred, $ip, $timer2, $loop) {
+                        $proxy->once('data', function ($data) use ($proxy, $deferred, $ip, $timer2, $loop,$idTimer) {
                             $loop->cancelTimer($timer2);
                             if ($data !== "\x05\x00") {
                                 $proxy->close();
                                 echo "Proxy SOCKS5 : méthode non supportée ou erreur\n";
                                 echo "Connection(2) to {$ip['ip']}:3306 not support." . PHP_EOL;
-                                $deferred->reject(new \Exception("Timeout(2)"));
+
+                                if ($idTimer === null)
+                                    $deferred->reject(new \Exception("Timeout(2)"));
+                                else
+                                    $deferred->resolve(false);
                                 return;
                             }
 
@@ -363,7 +367,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                echo "\n(3) Connexion fermée\n";
 //                            });
 
-                            $proxy->once('data', function ($data) use ($proxy, $addr, $port, $deferred, $ip, $timer3, $loop) {
+                            $proxy->once('data', function ($data) use ($proxy, $addr, $port, $deferred, $ip, $timer3, $loop,$idTimer) {
                                 $loop->cancelTimer($timer3);
                                 var_dump('(1) SIZE DATA : ' . strlen($data) . ' DATA : ' . bin2hex($data));
 
@@ -390,7 +394,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                $proxy->write($httpRequest);
 
                                 $timer4 = $this->createTimeout(2, $loop, $deferred, "Connection(4) to {$ip['ip']}:3306");
-                                $proxy->on('data', fn($chunk) => $this->dataFromProxy($chunk,$loop,$proxy,$deferred,$timer4));
+                                $proxy->on('data', fn($chunk) => $this->dataFromProxy($chunk,$loop,$proxy,$deferred,$timer4,$idTimer));
 
                                 // soit on recois des data , soit on a un timeout
                                 // TODO : voir comment gerer les close ?! (peut on faire un deferred = true, puis un false ?) (ou testé si le deferred a été triggered)
@@ -440,7 +444,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         else {
 
             echo "::::::::::::::::::::::::::::::::::::::::::::::::::: =========> ALL" ;
-            
+
             $result = \React\Promise\all($promises)->then(function ($results) use ($domain, &$_CACHE) {
                 // TODO : voir si y'a pas des timer en concurrence ?
                 echo "WRITE ips TO domain : " . $domain . " count ( " . count($results) . " \n";
