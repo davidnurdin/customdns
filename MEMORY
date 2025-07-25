@@ -1,2 +1,6 @@
-depuis le host : sudo socat TCP-LISTEN:9998,fork UNIX-CONNECT:./dns-helper/helper.sock 
+depuis le host : sudo socat TCP-LISTEN:9998,fork UNIX-CONNECT:./dns-helper/helper.sock
 curl --socks5-hostname localhost:9998 http://www.google.fr
+
+
+while true; do   docker exec -it $(docker container ls --format '{{.Names}}' | grep test-web) dig tasksActive.all.dns_test-mysql; done
+

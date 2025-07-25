@@ -62,6 +62,8 @@ services:
         - socketShare:/var/run/dns-helper
       deploy:
         mode: global  # un container par host
+        # a voir ? (mode defaut vip) endpoint_mode: dnsrr
+
 
     customdns:
         image: davidnurdin/customdns:latest
