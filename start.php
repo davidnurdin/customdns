@@ -493,6 +493,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
 
                             // get the networks
+                            /*
                             foreach ($service['Endpoint']['VirtualIPs'] as $network) {
                                 echo "Network: " . $network['NetworkID'] . PHP_EOL;
                                 echo "Addr:" . $network['Addr'] . PHP_EOL;
@@ -508,7 +509,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
                                 });
                             }
+                            */
 
+                            
                             $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
