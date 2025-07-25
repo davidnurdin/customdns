@@ -61,7 +61,6 @@ class myResolver implements ResolverInterface
 
     public function isSameRange($ipToSend,$ipSource,$networks)
     {
-        return false ;
         // Check if the IP to send is in the same range as the source IP
         // $ipToSend is the IP of the task, $ipSource is the real IP of the client
         // $networks is an array of networks to check
