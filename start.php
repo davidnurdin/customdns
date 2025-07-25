@@ -427,8 +427,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         {
             $result = \React\Promise\race($promises)->then(function ($results) use ($domain, &$_CACHE) {
 
-                var_dump($results);
-                die();
+//                var_dump($results);
+//                die();
 
                 echo "=>>>>>>>>>>>>>>> NOWWWW (one OK) WRITE ips TO domain : " . $domain . " count ( " . count($results) . " \n";
                 $_CACHE[$domain]['ips'] = $results;
