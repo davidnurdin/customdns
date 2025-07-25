@@ -431,6 +431,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                die();
 
                 echo "=>>>>>>>>>>>>>>> NOWWWW (one OK) WRITE ips TO domain : " . $domain . " count ( " . count($results) . " \n";
+                var_dump($results);
+
                 $_CACHE[$domain]['ips'] = $results;
                 return $results;
             });
