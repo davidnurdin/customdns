@@ -550,7 +550,13 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         $clientGwInspect->containerInspect($containerName)->then(
                             function (array $containerInfo)
                             {
-                                
+                                foreach ( $containerInfo['NetworkSettings']['Networks'] as $networkName => $networkInfo)
+                                {
+                                    if ($networkName !== 'ingress')
+                                    {
+                                        
+                                    }
+                                }
 
                             },
                             function (Exception $e) use ($deferredRequester) {
