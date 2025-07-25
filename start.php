@@ -298,7 +298,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
     }
 
-    public function testIpConnectivity($domain, $idTimer = null)
+    public function testIpConnectivity($domain, ?string $idTimer)
     {
         global $_CACHE;
 
