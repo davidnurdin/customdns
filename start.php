@@ -563,6 +563,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             function (Exception $e) use ($deferredRequester) {
                                 echo 'Error inspecting container: ' . $e->getMessage() . PHP_EOL;
 
+                            }
+
+                        );
 
                         // $deferredRequester->resolve([$containerName,"10.0.2.25"]); // TODO !!!
                     }
