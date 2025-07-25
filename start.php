@@ -80,6 +80,7 @@ class myResolver implements ResolverInterface
                 if ($_CACHE[$domain]['active']) {
                     foreach ($_CACHE[$domain]['ipsActive'] as $ip) {
 
+                        // send only IP on same network : TODO
                         if ($ip['canBeJoin']) {
                             $answers[] = (new ResourceRecord())
                                 ->setQuestion(false)
