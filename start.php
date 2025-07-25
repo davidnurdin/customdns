@@ -257,13 +257,13 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         }
     }
 
-    public function createTimeout(int $time, LoopInterface $loop, $deferred, $message)
+    public function createTimeout(int $time, LoopInterface $loop, $deferred, $message,$idTimer)
     {
         // 1er timer
         echo "Timeout on : " . $message . " after " . $time . " seconds." . PHP_EOL;
-        $timer = $loop->addTimer($time, function () use ($deferred, $message, $time) {
+        $timer = $loop->addTimer($time, function () use ($deferred, $message, $time,$idTimer) {
             echo "Timeout is CATCH on " . $message . " after " . $time . " seconds." . PHP_EOL;
-            $deferred->reject(new \Exception("Timeout : " . $message));
+            $this->rejectOrResolveFalse("Timeout : " . $message,$idTimer, $deferred);
         });
 
         return $timer;
