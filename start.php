@@ -566,6 +566,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 $deferredRequester->resolve([$containerName,$networkInspectInfo['Containers'][$containerName]['IPv4Address']]);
 
                                         // TODO : inspect this network , find container in "containers" and get real ip !
+                                    });
+                                    } else {
+                                        echo "Skipping ingress network for container: " . $containerName . PHP_EOL;
                                     }
                                 }
 
