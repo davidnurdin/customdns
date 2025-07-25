@@ -482,7 +482,21 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
 
                 $clientGwInspect = new Clue\React\Docker\Client();
-                $clientGwInspect->networkInspect('')
+                $clientGwInspect->networkInspect('docker_gwbridge')->then(
+                    function (array $network) use ($clientGwInspect, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                        // Check if the network is active
+                        if (isset($network['IPAM']['Config'][0]['Gateway'])) {
+                            echo "Network docker_gwbridge is active with gateway: " . $network['IPAM']['Config'][0]['Gateway'] . PHP_EOL;
+                            $_CACHE[$data['infos']['domain']]['active'] = true;
+                        } else {
+                            echo "Network docker_gwbridge is not active." . PHP_EOL;
+                        }
+                    },
+                    function (Exception $e) {
+                        echo 'Error inspecting network: ' . $e->getMessage() . PHP_EOL;
+                    }
+                );
+                
 
                 $client = new Clue\React\Docker\Client();
                 $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
