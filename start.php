@@ -492,21 +492,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         if ($service['Spec']['Name'] == $serviceName) {
 
 
-                            // get the networks
-                            foreach ($service['Endpoint']['VirtualIPs'] as $network) {
-                                echo "Network: " . $network['NetworkID'] . PHP_EOL;
-                                echo "Addr:" . $network['Addr'] . PHP_EOL;
 
-                                // ASK DNS HELPER to join NETWORK
-                                $client->networkConnect($network['NetworkID'], 'd41e9504c720f841b14efdf82d1a821564ba5379929bfdeb8e9ce46323b5b998')->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                                    echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
-                                })->otherwise(function (Exception $e) {
-                                    echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
-                                });
-                            }
-
-
-                            $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                            $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$client) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
                                     // filter task get only Running AND have Addresses
@@ -518,8 +505,22 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     $_CACHE[$data['infos']['domain']]['nbTasksToResolve'] = count($tasks);
                                     $_CACHE[$data['infos']['domain']]['nbTasksResolved'] = 0;
                                     foreach ($tasks as $task) {
-                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND) {
+                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND,$client) {
                                             var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
+
+
+                                            // get the networks
+                                            foreach ($service['Endpoint']['VirtualIPs'] as $network) {
+                                                echo "Network: " . $network['NetworkID'] . PHP_EOL;
+                                                echo "Addr:" . $network['Addr'] . PHP_EOL;
+
+                                                // ASK DNS HELPER to join NETWORK
+                                                $client->networkConnect($network['NetworkID'], 'd41e9504c720f841b14efdf82d1a821564ba5379929bfdeb8e9ce46323b5b998')->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                                                    echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
+                                                })->otherwise(function (Exception $e) {
+                                                    echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
+                                                });
+                                            }
 
                                             // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
                                             $_CACHE[$data['infos']['domain']]['nbTasksResolved']++;
