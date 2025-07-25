@@ -361,7 +361,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
             var_dump($result);
             return $result ;
-
+            
         });
 
 
