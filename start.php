@@ -538,6 +538,11 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                            // get the networks and connect to it : todo : exclude ingress?
 //                                            // TODO : ne connect que si le current node est bien le meme !
                                             foreach ($service['Endpoint']['VirtualIPs'] as $network) {
+
+
+                                                // INSPECT NETWORK and connect only the network on same IP range of the requester
+
+                                                
                                                 echo "Network: " . $network['NetworkID'] . PHP_EOL;
                                                 echo "Addr:" . $network['Addr'] . PHP_EOL;
                                                 echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $task['Status']['ContainerStatus']['ContainerID'] . PHP_EOL;
