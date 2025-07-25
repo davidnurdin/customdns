@@ -543,8 +543,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             var_dump($listContainer);
             foreach ($listContainer as $container)
             {
-                if ($container['Labels']['com.respawnsive.dns-helper'] == )
+                $myNameSpace = 'dns' ;
+                if ($container['Labels']['com.docker.stack.namespace'] == $myNameSpace )
                 {
+                    if ($container['Labels']['com.docker.stack.namespace'] == $myNameSpace )
                     echo "Found DNS Helper container: " . $container['Id'] . PHP_EOL;
                     // Resolve the promise with the container ID
                     $deferredRequester->resolve($container['Id']);
