@@ -558,8 +558,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         return $deferredRequester->promise() ;
     }
-    public
-    function resolveDocker()
+    public function resolveDocker()
     {
         global $_TORESOLVE, $_CACHE, $_TORESEND;
         if (count($_TORESOLVE) > 0) {
