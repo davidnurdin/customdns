@@ -423,14 +423,24 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         echo "END FOREACH\n";
 
-        $result = \React\Promise\all($promises)->then(function ($results) use ($domain, &$_CACHE) {
-            // TODO : voir si y'a pas des timer en concurrence ?
-            echo "WRITE ips TO domain : " . $domain . " count ( " . count($results) . " \n";
-            var_export($results);
+        if ($idTimer === null)
+        {
+            $result = \React\Promise\race($promises)->then(function ($results) use ($domain, &$_CACHE) {
+                echo "=>>>>>>>>>>>>>>> NOWWWW (one OK) WRITE ips TO domain : " . $domain . " count ( " . count($results) . " \n";
+                $_CACHE[$domain]['ips'] = $results;
+                return $results;
+            });
+        }
+        else {
+            $result = \React\Promise\all($promises)->then(function ($results) use ($domain, &$_CACHE) {
+                // TODO : voir si y'a pas des timer en concurrence ?
+                echo "WRITE ips TO domain : " . $domain . " count ( " . count($results) . " \n";
+                var_export($results);
 
-            $_CACHE[$domain]['ips'] = $results;
-            return $results;
-        });
+                $_CACHE[$domain]['ips'] = $results;
+                return $results;
+            });
+        }
 
         echo "END PROMISE\n";
 
