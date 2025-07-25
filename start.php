@@ -260,7 +260,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         }
 
 
-        echo "Cache emptied at " . date('Y-m-d H:i:s') . PHP_EOL;
+        echo "Cache clear at " . date('Y-m-d H:i:s') . PHP_EOL;
     }
 
     public function retryResend()
