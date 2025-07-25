@@ -429,7 +429,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                 var_dump($results);
                 die();
-                
+
                 echo "=>>>>>>>>>>>>>>> NOWWWW (one OK) WRITE ips TO domain : " . $domain . " count ( " . count($results) . " \n";
                 $_CACHE[$domain]['ips'] = $results;
                 return $results;
