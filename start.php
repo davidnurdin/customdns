@@ -481,7 +481,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     if (explode('/',$containerInfos['IPv4Address'])[0] == explode(':',$data['infos']['client'])[0]) {
                         echo "Found client in docker_gwbridge network: " . $containerName . PHP_EOL; // container web
                         // TODO : faire la correspondance $client <> ip du container sur le meme réseau ! => re ecrire : $data['infos']['client']
-                        $deferredRequester->resolve([$containerName,"127.6.6.6:5558"]);
+                        $deferredRequester->resolve([$containerName,"127.6.6.6"]);
                     }
 
                 }
@@ -511,6 +511,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     [$resolverClientContainerId,$ipAsker] = $infos ;
 
                     echo "=======||||||||||||||||||||||||||||========== " .  $ipAsker . " on the container : " . $resolverClientContainerId . " has ask for service : " . $serviceName . PHP_EOL;
+                    $data['infos']['client'] = $ipAsker; // update the client with the IP of the container on the same network
+
 
                     $client = new Clue\React\Docker\Client();
                     $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId) {
