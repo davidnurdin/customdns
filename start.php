@@ -492,11 +492,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         if ($service['Spec']['Name'] == $serviceName) {
 
 
-                            var_dump($services);
-                            die();
-                            
                             // get the networks
-                            foreach ($services['Endpoint']['VirtualIPs'] as $network) {
+                            foreach ($service['Endpoint']['VirtualIPs'] as $network) {
                                 echo "Network: " . $network['NetworkID'] . PHP_EOL;
                                 echo "Addr:" . $network['Addr'] . PHP_EOL;
                             }
