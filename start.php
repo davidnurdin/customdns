@@ -50,6 +50,33 @@ class myResolver implements ResolverInterface
         return [false, null, null];
     }
 
+    public function isSameRange($ipToSend,$ipSource,$networks)
+    {
+        // Check if the IP to send is in the same range as the source IP
+        // $ipToSend is the IP of the task, $ipSource is the real IP of the client
+        // $networks is an array of networks to check
+
+        if (empty($networks)) {
+            return true; // No networks to check, assume it's the same range
+        }
+
+        foreach ($networks as $network) {
+            if (strpos($network, '/') !== false) {
+                // CIDR notation
+                list($networkIp, $cidr) = explode('/', $network);
+                if ($this->isInCidrRange($ipToSend, $networkIp, (int)$cidr)) {
+                    return true;
+                }
+            } else {
+                // Single IP address
+                if ($ipToSend === $network) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
     public function getAnswerAsync(array $queries, ?string $client = null, ?Deferred $deferred = null): \React\Promise\PromiseInterface
     {
         global $_CACHE, $_TORESOLVE, $_TORESEND;
