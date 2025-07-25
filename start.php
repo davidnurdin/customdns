@@ -488,7 +488,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         foreach ( $network['Containers'] as $containerName => $containerInfos)
                         {
                             // search the client source in this list with same IPV4
-                            if ($containerInfos[''])
+                            if ($containerInfos['IPv4Address'])
 
                         }
                     },
