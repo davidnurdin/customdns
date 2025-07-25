@@ -556,6 +556,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     {
                                         echo "Found network: " . $networkName . " for container: " . $networkName . PHP_EOL;
 
+                                        // TODO : inspect this network , find container in "containers" and get real ip !
                                     }
                                 }
 
