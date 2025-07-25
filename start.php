@@ -508,9 +508,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         if ($service['Spec']['Name'] == $serviceName) {
 
 
-                            var_dump($service);
-                            die();
-
 
                             $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
@@ -547,6 +544,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 });
 
                                                 $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
+
+                                                // make an inspect on each networks and find the container who made the request !
                                             }
 
                                             // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
