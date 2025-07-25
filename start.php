@@ -87,7 +87,7 @@ class myResolver implements ResolverInterface
         return false;
     }
 
-    
+
     public function getAnswerAsync(array $queries, ?string $client = null, ?Deferred $deferred = null): \React\Promise\PromiseInterface
     {
         global $_CACHE, $_TORESOLVE, $_TORESEND;
@@ -345,7 +345,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
     }
 
-    public function testIpConnectivity($domain, ?string $idTimer)
+    public function testIpConnectivity($domain, ?string $idTimer,?string $ipAsker)
     {
         global $_CACHE;
 
@@ -353,7 +353,14 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         echo "\n\nCALLXXXX FROM : " . $idTimer . "\n";
 
         $promises = [];
-        foreach ($_CACHE[$domain]['ips'] as $ip) {
+
+        $ipsFiltered = array_filter($_CACHE[$domain]['ips'] ?? [], function ($ip) use ($domain) {
+            if ($this->resolver->isSameRange($ip,$realIp, $_CACHE[$domain]['networks'] ?? [])) {
+
+            }
+        });
+
+        foreach ($ipsFiltered as $ip) {
             $promises[] = \React\Promise\resolve($ip['canBeJoin'] ?? null)
                 ->then(function ($canBeJoin) use ($ip, $domain,$idTimer) {
 
@@ -666,7 +673,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 //$data['infos']['client']
 
 
-                                                $this->testIpConnectivity($data['infos']['domain'], null)
+                                                $this->testIpConnectivity($data['infos']['domain'], null,$ipAsker)
                                                     ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND) {
                                                         // Update the cache with the connectivity results
                                                         echo "=========+> SET ACTIVE DOMAIN : " . $data['infos']['domain'] . PHP_EOL;
