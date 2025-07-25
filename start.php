@@ -499,8 +499,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                             echo "Found client in docker_gwbridge network: " . $containerID . PHP_EOL;
                                             // get the networks and connect to it : todo : exclude ingress?
                                             // TODO : ne connect que si le current node est bien le meme !
-                                            echo "Network: " . $network['NetworkID'] . PHP_EOL;
-                                            echo "Addr:" . $network['Addr'] . PHP_EOL;
                                             echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $containerID . PHP_EOL;
                                             // ASK DNS HELPER to join NETWORK
                                             $client->networkConnect($network['NetworkID'], $containerID)->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
@@ -509,7 +507,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
                                             });
                                             die();
-                                            
+
                                             $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
                                         }
 
