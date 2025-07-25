@@ -81,8 +81,11 @@ class myResolver implements ResolverInterface
                     foreach ($_CACHE[$domain]['ipsActive'] as $ip) {
 
                         // get the real ip
-                        $realIp = $_CACHE[$domain]['ipNat'][$client] ;
+                        var_dump($_CACHE[$domain]['ipNat']);
+                        die();
                         
+                        $realIp = $_CACHE[$domain]['ipNat'][$client] ;
+
                         // send only IP on same network of the client
                         // if ($this->isSameRange($ip['ip'],$_CACHE
 
