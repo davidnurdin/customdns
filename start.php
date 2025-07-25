@@ -614,6 +614,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 }
 
 
+                                                // met a jour l'ip du demandeur (par défaut il utilise l'ip 172.xxx)
+                                                
+
+
                                                 $this->testIpConnectivity($data['infos']['domain'], null)
                                                     ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND) {
                                                         // Update the cache with the connectivity results
