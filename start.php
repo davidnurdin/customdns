@@ -481,6 +481,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $_CACHE[$data['infos']['domain']]['active'] = false;
 
 
+                $clientGwInspect = new Clue\React\Docker\Client();
+                $clientGwInspect->networkInspect('')
 
                 $client = new Clue\React\Docker\Client();
                 $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
