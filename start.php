@@ -510,6 +510,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
 
                                             // get the networks and connect to it : todo : exclude ingress?
+                                            // TODO : ne connect que si le current node est bien le meme !
                                             foreach ($service['Endpoint']['VirtualIPs'] as $network) {
                                                 echo "Network: " . $network['NetworkID'] . PHP_EOL;
                                                 echo "Addr:" . $network['Addr'] . PHP_EOL;
