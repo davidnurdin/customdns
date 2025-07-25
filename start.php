@@ -481,27 +481,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $_CACHE[$data['infos']['domain']]['active'] = false;
 
 
-                $clientGwInspect = new Clue\React\Docker\Client();
-                $clientGwInspect->networkInspect('docker_gwbridge')->then(
-                    function (array $network) use ($clientGwInspect, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                        // Check if the network is active
-                        foreach ( $network['Containers'] as $containerName => $containerInfos)
-                        {
-                            // search the client source in this list with same IPV4
-                            if (explode('/',$containerInfos['IPv4Address'])[0] == explode(':',$data['infos']['client'])[0]) {
-                                echo "Found client in docker_gwbridge network: " . $containerName . PHP_EOL; // container web
-                                // TODO : faire la correspondance $client <> ip du container sur le meme réseau ! => re ecrire : $data['infos']['client']
-
-                            }
-
-                        }
-                    },
-                    function (Exception $e) {
-                        echo 'Error inspecting network: ' . $e->getMessage() . PHP_EOL;
-                    }
-                );
-
-
                 $client = new Clue\React\Docker\Client();
                 $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                     foreach ($services as $service) {
