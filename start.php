@@ -489,85 +489,84 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $client = new Clue\React\Docker\Client();
                 $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                     foreach ($services as $service) {
-                        var_dump($services);die();
+                        if ($service['Spec']['Name'] == $serviceName) {
+                            $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                                    echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
-                        
-                        $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                            if ($service['Spec']['Name'] == $serviceName) {
-                                echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
-
-                                // filter task get only Running AND have Addresses
-                                $tasks = array_filter($tasks, function ($task) {
-                                    return $task['Status']['State'] == 'running' && isset($task['NetworksAttachments'][0]['Addresses']);
-                                });
-
-
-                                $_CACHE[$data['infos']['domain']]['nbTasksToResolve'] = count($tasks);
-                                $_CACHE[$data['infos']['domain']]['nbTasksResolved'] = 0;
-                                foreach ($tasks as $task) {
-                                    $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND) {
-                                        var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
-
-                                        // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
-                                        $_CACHE[$data['infos']['domain']]['nbTasksResolved']++;
-                                        foreach ($taskDetails['NetworksAttachments'] as $netWork) {
-                                            $ipRange = $netWork['Addresses'];
-                                            $ip = explode('/', $ipRange[0])[0]; // Get the IP address part before the slash
-                                            $_CACHE[$data['infos']['domain']]['ips'][] = ['ip' => $ip];
-                                        }
-
-
-                                        if ($_CACHE[$data['infos']['domain']]['nbTasksResolved'] == $_CACHE[$data['infos']['domain']]['nbTasksToResolve']) {
-                                            echo "All tasks resolved for service: " . $service['Spec']['Name'] . PHP_EOL;
-                                            foreach ($_CACHE[$data['infos']['domain']]['ips'] as $displayIp) {
-                                                echo "IPs: " . $displayIp['ip'] . PHP_EOL;
-                                            }
-
-
-                                            $this->testIpConnectivity($data['infos']['domain'])
-                                                ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND) {
-                                                    // Update the cache with the connectivity results
-                                                    echo "=========+> SET ACTIVE DOMAIN : " . $data['infos']['domain'] . PHP_EOL;
-
-                                                    $_CACHE[$data['infos']['domain']]['active'] = true;
-
-
-                                                    if (!isset($_TORESEND[$data['infos']['domain']]))
-                                                        $_TORESEND[$data['infos']['domain']] = [];
-
-                                                    $_TORESEND[$data['infos']['domain']][] = [
-                                                        'deferred' => $data['infos']['deferred'],
-                                                        'client' => $data['infos']['client'],
-                                                        'queries' => $data['infos']['queries'],
-                                                        'server' => $data['infos']['server'],
-                                                        'domainAsked' => $data['infos']['domainAsked'],
-                                                        'domain' => $data['infos']['domain']
-                                                    ];
-
-                                                    $this->loop->addTimer(0.2, (fn() => $this->retryResend()));
-                                                    // add Periodic Check of IPs
-                                                    $_CACHE[$data['infos']['domain']]['timerConnectivity'] = ['id' => uniqid() . rand(1, 10000)];
-                                                    $_CACHE[$data['infos']['domain']]['timerConnectivity']['timer'] = $this->loop->addPeriodicTimer(5, fn() => $this->testIpConnectivity($data['infos']['domain'], $_CACHE[$data['infos']['domain']]['timerConnectivity']['id']));
-//
-
-                                                });
-
-
-                                        }
-
-                                    })->otherwise(function (Exception $e) {
-                                        echo 'Error inspecting task: ' . $e->getMessage() . PHP_EOL;
+                                    // filter task get only Running AND have Addresses
+                                    $tasks = array_filter($tasks, function ($task) {
+                                        return $task['Status']['State'] == 'running' && isset($task['NetworksAttachments'][0]['Addresses']);
                                     });
 
 
-                                    echo "Status: " . $task['Status']['State'] . PHP_EOL;
-                                    echo "Node: " . $task['NodeID'] . PHP_EOL;
-                                    echo PHP_EOL;
-                                }
-                            }
-                        })->otherwise(function (Exception $e) {
-                            echo 'Error listing tasks: ' . $e->getMessage() . PHP_EOL;
-                        });
+                                    $_CACHE[$data['infos']['domain']]['nbTasksToResolve'] = count($tasks);
+                                    $_CACHE[$data['infos']['domain']]['nbTasksResolved'] = 0;
+                                    foreach ($tasks as $task) {
+                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND) {
+                                            var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
+
+                                            // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
+                                            $_CACHE[$data['infos']['domain']]['nbTasksResolved']++;
+                                            foreach ($taskDetails['NetworksAttachments'] as $netWork) {
+                                                $ipRange = $netWork['Addresses'];
+                                                $ip = explode('/', $ipRange[0])[0]; // Get the IP address part before the slash
+                                                $_CACHE[$data['infos']['domain']]['ips'][] = ['ip' => $ip];
+                                            }
+
+
+                                            if ($_CACHE[$data['infos']['domain']]['nbTasksResolved'] == $_CACHE[$data['infos']['domain']]['nbTasksToResolve']) {
+                                                echo "All tasks resolved for service: " . $service['Spec']['Name'] . PHP_EOL;
+                                                foreach ($_CACHE[$data['infos']['domain']]['ips'] as $displayIp) {
+                                                    echo "IPs: " . $displayIp['ip'] . PHP_EOL;
+                                                }
+
+
+                                                $this->testIpConnectivity($data['infos']['domain'])
+                                                    ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND) {
+                                                        // Update the cache with the connectivity results
+                                                        echo "=========+> SET ACTIVE DOMAIN : " . $data['infos']['domain'] . PHP_EOL;
+
+                                                        $_CACHE[$data['infos']['domain']]['active'] = true;
+
+
+                                                        if (!isset($_TORESEND[$data['infos']['domain']]))
+                                                            $_TORESEND[$data['infos']['domain']] = [];
+
+                                                        $_TORESEND[$data['infos']['domain']][] = [
+                                                            'deferred' => $data['infos']['deferred'],
+                                                            'client' => $data['infos']['client'],
+                                                            'queries' => $data['infos']['queries'],
+                                                            'server' => $data['infos']['server'],
+                                                            'domainAsked' => $data['infos']['domainAsked'],
+                                                            'domain' => $data['infos']['domain']
+                                                        ];
+
+                                                        $this->loop->addTimer(0.2, (fn() => $this->retryResend()));
+                                                        // add Periodic Check of IPs
+                                                        $_CACHE[$data['infos']['domain']]['timerConnectivity'] = ['id' => uniqid() . rand(1, 10000)];
+                                                        $_CACHE[$data['infos']['domain']]['timerConnectivity']['timer'] = $this->loop->addPeriodicTimer(5, fn() => $this->testIpConnectivity($data['infos']['domain'], $_CACHE[$data['infos']['domain']]['timerConnectivity']['id']));
+//
+
+                                                    });
+
+
+                                            }
+
+                                        })->otherwise(function (Exception $e) {
+                                            echo 'Error inspecting task: ' . $e->getMessage() . PHP_EOL;
+                                        });
+
+
+                                        echo "Status: " . $task['Status']['State'] . PHP_EOL;
+                                        echo "Node: " . $task['NodeID'] . PHP_EOL;
+                                        echo PHP_EOL;
+                                    }
+
+                            })->otherwise(function (Exception $e) {
+                                echo 'Error listing tasks: ' . $e->getMessage() . PHP_EOL;
+                            });
+                        }
+
                     }
                 }, function (Exception $e) {
                     echo 'Error: ' . $e->getMessage() . PHP_EOL;
