@@ -493,7 +493,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
 
                             // get the networks
-                            foreach ($services['Endpoint'])
+                            foreach ($services['Endpoint'][''])
 
                             $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
