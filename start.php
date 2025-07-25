@@ -314,14 +314,14 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         'unix' => true,
                     ]);
 
-                    $timer1 = $this->createTimeout(5, $loop, $deferred, "Connection(1) to {$ip['ip']}:3306");
+                    $timer1 = $this->createTimeout(2, $loop, $deferred, "Connection(1) to {$ip['ip']}:3306");
                     $unixSocketPath = '/var/run/dns-helper/helper.sock';
                     $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop, $deferred, $ip, $timer1) {
                         echo "Connecté à la socket Unix SOCKS5\n";
                         $loop->cancelTimer($timer1);
 
                         // 2eme timer
-                        $timer2 = $this->createTimeout(5, $loop, $deferred, "Connection(2) to {$ip['ip']}:3306");
+                        $timer2 = $this->createTimeout(2, $loop, $deferred, "Connection(2) to {$ip['ip']}:3306");
                         // Étape 1 : Négociation SOCKS5 (no auth)
                         $proxy->write("\x05\x01\x00");
 
@@ -356,7 +356,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                             $proxy->write($request);
 
 
-                            $timer3 = $this->createTimeout(5, $loop, $deferred, "Connection(3) to {$ip['ip']}:3306");
+                            $timer3 = $this->createTimeout(2, $loop, $deferred, "Connection(3) to {$ip['ip']}:3306");
 //                            $proxy->once('close', function () use ($timer3, $loop,$deferred) {
 //                                $loop->cancelTimer($timer3);
 //                                $deferred->resolve(false);
@@ -389,7 +389,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                $httpRequest = "GET / HTTP/1.1\r\nHost: www.google.fr\r\nConnection: close\r\n\r\n";
 //                                $proxy->write($httpRequest);
 
-                                $timer4 = $this->createTimeout(5, $loop, $deferred, "Connection(4) to {$ip['ip']}:3306");
+                                $timer4 = $this->createTimeout(2, $loop, $deferred, "Connection(4) to {$ip['ip']}:3306");
                                 $proxy->on('data', fn($chunk) => $this->dataFromProxy($chunk,$loop,$proxy,$deferred,$timer4));
 
                                 // soit on recois des data , soit on a un timeout
