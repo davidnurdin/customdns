@@ -708,7 +708,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                         $this->loop->addTimer(0.2, (fn() => $this->retryResend()));
                                                         // add Periodic Check of IPs
                                                         $_CACHE[$data['infos']['domain']]['timerConnectivity'] = ['id' => uniqid() . rand(1, 10000)];
-                                                        $_CACHE[$data['infos']['domain']]['timerConnectivity']['timer'] = $this->loop->addPeriodicTimer(1, fn() => $this->testIpConnectivity($data['infos']['domain'], $_CACHE[$data['infos']['domain']]['timerConnectivity']['id'],null));
+                                                        $_CACHE[$data['infos']['domain']]['timerConnectivity']['timer'] = $this->loop->addPeriodicTimer(5, fn() => $this->testIpConnectivity($data['infos']['domain'], $_CACHE[$data['infos']['domain']]['timerConnectivity']['id'],null));
 //
 
                                                     });
