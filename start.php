@@ -505,7 +505,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     $_CACHE[$data['infos']['domain']]['nbTasksToResolve'] = count($tasks);
                                     $_CACHE[$data['infos']['domain']]['nbTasksResolved'] = 0;
                                     foreach ($tasks as $task) {
-                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND,$client) {
+                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND,$client,$task,$serviceName) {
                                             var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
 
@@ -515,7 +515,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 echo "Addr:" . $network['Addr'] . PHP_EOL;
 
                                                 // ASK DNS HELPER to join NETWORK
-                                                $client->networkConnect($network['NetworkID'], $task['Status']['ContainerStatus'][''])->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                                                $client->networkConnect($network['NetworkID'], $task['Status']['ContainerStatus']['ContainerID'])->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                                                     echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
                                                 })->otherwise(function (Exception $e) {
                                                     echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
