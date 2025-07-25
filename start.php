@@ -488,7 +488,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         foreach ( $network['Containers'] as $containerName => $containerInfos)
                         {
                             // search the client source in this list with same IPV4
-                            if ($containerInfos['IPv4Address'])
+                            if (explode('/',$containerInfos['IPv4Address'])[0] == explode(':',$data['infos']['client'])[0]) {
+                                echo "Found client in docker_gwbridge network: " . $containerName . PHP_EOL;
+                            }
 
                         }
                     },
