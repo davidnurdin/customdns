@@ -549,7 +549,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                     foreach ($networkInspectInfo['Containers'] as $searchingSourceContainerID => $searchingSourceContainerInfo) {
 
                                                         // real IP is here
-                                                        
+
                                                         if ($searchingSourceContainerID == $resolverClientContainerId) {
                                                             echo "Network: " . $network['NetworkID'] . PHP_EOL;
                                                             echo "Addr:" . $network['Addr'] . PHP_EOL;
