@@ -565,7 +565,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                             die();
 
-                                            
+
                                             // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
                                             $_CACHE[$data['infos']['domain']]['nbTasksResolved']++;
                                             foreach ($taskDetails['NetworksAttachments'] as $netWork) {
