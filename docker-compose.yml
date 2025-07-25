@@ -25,6 +25,8 @@ services:
           apt-get install -y procps telnet dnsutils inetutils-ping
           exec sleep infinity
       deploy:
+        placement:
+          max_replicas_per_node: 1
         replicas: 3
         restart_policy:
           condition: on-failure
@@ -42,6 +44,8 @@ services:
         ports:
           - "3306"
         deploy:
+          placement:
+            max_replicas_per_node: 1
           replicas: 3
           restart_policy:
               condition: on-failure
