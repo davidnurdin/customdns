@@ -77,7 +77,7 @@ class myResolver implements ResolverInterface
                     $_CACHE[$domain]['active'] = false;
 
                 if ($_CACHE[$domain]['active']) {
-                    foreach ($_CACHE[$domain]['ips'] as $ip) {
+                    foreach ($_CACHE[$domain]['ipsActive'] as $ip) {
 
                         if ($ip['canBeJoin']) {
                             $answers[] = (new ResourceRecord())
@@ -462,6 +462,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                 $serviceName = $data['infos']['domain'];
                 $_CACHE[$data['infos']['domain']]['ips'] = [];
+                $_CACHE[$data['infos']['domain']]['ipsActive'] = [];
                 $_CACHE[$data['infos']['domain']]['active'] = false;
 
                 $client = new Clue\React\Docker\Client();
@@ -488,7 +489,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                         foreach ($taskDetails['NetworksAttachments'] as $netWork) {
                                             $ipRange = $netWork['Addresses'];
                                             $ip = explode('/', $ipRange[0])[0]; // Get the IP address part before the slash
-                                            $_CACHE[$data['infos']['domain']]['ips'][] = ['canBeJoin' => null, 'ip' => $ip];
+                                            $_CACHE[$data['infos']['domain']]['ips'][] = ['ip' => $ip];
                                         }
 
 
