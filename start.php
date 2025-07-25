@@ -496,6 +496,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     {
                                         // search the client source in this list with same IPV4
                                         if (explode('/',$containerInfos['IPv4Address'])[0] == explode(':',$data['infos']['client'])[0]) {
+
+                                            var_dump($containerID,$containerInfos);
+                                            die();
+                                            
                                             echo "Found client in docker_gwbridge network: " . $containerID . PHP_EOL;
                                             // get the networks and connect to it : todo : exclude ingress?
                                             // TODO : ne connect que si le current node est bien le meme !
