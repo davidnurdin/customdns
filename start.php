@@ -81,24 +81,22 @@ class myResolver implements ResolverInterface
                     foreach ($_CACHE[$domain]['ipsActive'] as $ip) {
 
                         $client = explode(':', $client)[0] ?? null; // get the client IP without port
-
                         // get the real ip
-                        var_dump($_CACHE[$domain]['ipNat'],$client);
-                        die();
-
                         $realIp = $_CACHE[$domain]['ipNat'][$client] ;
 
                         // send only IP on same network of the client
-                        // if ($this->isSameRange($ip['ip'],$_CACHE
+                         if ($this->isSameRange($ip['ip'],$realIp, $_CACHE[$domain]['networks'] ?? [])) {
+                             if ($ip['canBeJoin']) {
+                                 $answers[] = (new ResourceRecord())
+                                     ->setQuestion(false)
+                                     ->setTtl(1)
+                                     ->setType(RecordTypeEnum::TYPE_A)
+                                     ->setName($domainAsked . '.')
+                                     ->setRdata($ip['ip']);
+                             }
 
-                        if ($ip['canBeJoin']) {
-                            $answers[] = (new ResourceRecord())
-                                ->setQuestion(false)
-                                ->setTtl(1)
-                                ->setType(RecordTypeEnum::TYPE_A)
-                                ->setName($domainAsked . '.')
-                                ->setRdata($ip['ip']);
-                        }
+                         }
+
 
                     }
                     $deferred->resolve($answers);
