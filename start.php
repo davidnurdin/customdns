@@ -498,9 +498,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     });
 
 
-                                    var_dump( $_CACHE[$data['infos']);
+                                    var_dump( $_CACHE[$data['infos']]);
                                     die();
-                                    
+
                                     $_CACHE[$data['infos']['domain']]['nbTasksToResolve'] = count($tasks);
                                     $_CACHE[$data['infos']['domain']]['nbTasksResolved'] = 0;
                                     $_CACHE[$data['infos']['domain']]['networks'] = [];
