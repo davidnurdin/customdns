@@ -504,6 +504,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                     $_CACHE[$data['infos']['domain']]['nbTasksToResolve'] = count($tasks);
                                     $_CACHE[$data['infos']['domain']]['nbTasksResolved'] = 0;
+                                    $_CACHE[$data['infos']['domain']]['networks'] = [];
+
                                     foreach ($tasks as $task) {
                                         $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND,$client,$task,$serviceName) {
                                             var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
@@ -521,6 +523,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 })->otherwise(function (Exception $e) {
                                                     echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
                                                 });
+
+                                                $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID'] = $network['Addr'];
                                             }
 
                                             // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
