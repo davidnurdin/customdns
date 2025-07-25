@@ -80,15 +80,8 @@ class myResolver implements ResolverInterface
                 if ($_CACHE[$domain]['active']) {
                     foreach ($_CACHE[$domain]['ipsActive'] as $ip) {
 
-                        // send only IP on same network : TODO
-
-                        if ($this->isSameRange($ip['ip'], $domainAsked)) {
-                            echo "IP : " . $ip['ip'] . " is in the same range as " . $domainAsked . PHP_EOL;
-                        } else {
-                            echo "IP : " . $ip['ip'] . " is NOT in the same range as " . $domainAsked . PHP_EOL;
-                            continue; // skip this IP
-                        }
-                        
+                        // send only IP on same network of the client
+                        // if ($this->isSameRange($ip['ip'],$_CACHE
 
                         if ($ip['canBeJoin']) {
                             $answers[] = (new ResourceRecord())
