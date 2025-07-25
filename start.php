@@ -524,7 +524,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                     echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
                                                 });
 
-                                                $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID'] = $network['Addr'];
+                                                $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
                                             }
 
                                             // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
@@ -541,7 +541,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                                 var_dump($_CACHE[$data['infos']['domain']]);
                                                 die();
-                                                
+
                                                 foreach ($_CACHE[$data['infos']['domain']]['ips'] as $displayIp) {
                                                     echo "IPs: " . $displayIp['ip'] . PHP_EOL;
                                                 }
