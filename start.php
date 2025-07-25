@@ -548,6 +548,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                                     if (!isset($_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']])) {
 
+                                                        // On place Dns Helper dans le réseau (ceci est appelé sur les 3 node , normal d'avoir des not found)
                                                         echo "Network: " . $network['NetworkID'] . PHP_EOL;
                                                         echo "Addr:" . $network['Addr'] . PHP_EOL;
                                                         echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $task['Status']['ContainerStatus']['ContainerID'] . PHP_EOL;
