@@ -193,7 +193,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $this->resolver->server = $this;
 
         $this->loop->addPeriodicTimer(1, fn() => $this->retryResend());
-        $this->loop->addPeriodicTimer(60, fn() => $this->emptyCache());
+        $this->loop->addPeriodicTimer(20, fn() => $this->emptyCache());
 
     }
 
