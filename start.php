@@ -538,6 +538,10 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                             if ($_CACHE[$data['infos']['domain']]['nbTasksResolved'] == $_CACHE[$data['infos']['domain']]['nbTasksToResolve']) {
                                                 echo "All tasks resolved for service: " . $service['Spec']['Name'] . PHP_EOL;
+
+                                                var_dump($_CACHE[$data['infos']['domain']]);
+                                                die();
+                                                
                                                 foreach ($_CACHE[$data['infos']['domain']]['ips'] as $displayIp) {
                                                     echo "IPs: " . $displayIp['ip'] . PHP_EOL;
                                                 }
