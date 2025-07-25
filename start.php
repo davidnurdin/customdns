@@ -436,7 +436,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             });
         }
         else {
-            $result = \React\Promise\any($promises)->then(function ($results) use ($domain, &$_CACHE) {
+            $result = \React\Promise\all($promises)->then(function ($results) use ($domain, &$_CACHE) {
                 // TODO : voir si y'a pas des timer en concurrence ?
                 echo "WRITE ips TO domain : " . $domain . " count ( " . count($results) . " \n";
                 var_export($results);
