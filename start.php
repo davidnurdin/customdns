@@ -552,8 +552,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                                         if ($searchingSourceContainerID == $resolverClientContainerId) {
 
+                                                            echo "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
                                                             var_dump($searchingSourceContainerInfo);
-                                                            die();
 
                                                             echo "Network: " . $network['NetworkID'] . PHP_EOL;
                                                             echo "Addr:" . $network['Addr'] . PHP_EOL;
