@@ -513,8 +513,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     [$resolverClientContainerId,$ipAsker] = $infos ;
 
                     echo "=======||||||||||||||||||||||||||||========== " .  $ipAsker . " on the container : " . $resolverClientContainerId . " has ask for service : " . $serviceName . PHP_EOL;
-                    $data['infos']['client'] = $ipAsker; // update the client with the IP of the container on the same network
-
+                    $_CACHE[$data['infos']['domain']]['ipNat'][$data['infos']['client']] = $ipAsker; // store the IP of the container on the same network
 
                     $client = new Clue\React\Docker\Client();
                     $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId) {
