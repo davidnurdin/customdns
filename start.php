@@ -546,7 +546,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 $client->networkInspect($network['NetworkID'])->then(function (array $networkInspectInfo) use ($client, $service, $serviceName, $data, &$_CACHE, &$_TORESEND, $task,$network) {
 
                                                     var_dump($networkInspectInfo);
-
                                                     die("kkkkkkkk");
 
                                                     echo "Network: " . $network['NetworkID'] . PHP_EOL;
@@ -564,8 +563,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 });
 
                                             }
-
-                                            die();
 
 
                                             // TODO : faudra peut etre spécifié le nom de réseau ou le déduire depuis la source ?
