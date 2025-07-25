@@ -363,7 +363,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         var_dump($ipsFiltered);
         die();
-        
+
         foreach ($ipsFiltered as $ip) {
             $promises[] = \React\Promise\resolve($ip['canBeJoin'] ?? null)
                 ->then(function ($canBeJoin) use ($ip, $domain,$idTimer) {
