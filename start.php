@@ -498,7 +498,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 echo "Addr:" . $network['Addr'] . PHP_EOL;
 
                                 // ASK DNS HELPER to join NETWORK
-                                $client->networkConnect($network['NetworkID'], 'd41e9504c720')->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                                $client->networkConnect($network['NetworkID'], 'd41e9504c720f841b14efdf82d1a821564ba5379929bfdeb8e9ce46323b5b998')->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                                     echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
                                 })->otherwise(function (Exception $e) {
                                     echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
