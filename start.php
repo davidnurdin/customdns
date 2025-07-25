@@ -487,8 +487,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         // Check if the network is active
                         foreach ( $network['Containers'] as $container)
                         {
-                            // search the client source in this list
+                            // search the client source in this list with same IPV4
                             
+
                         }
                     },
                     function (Exception $e) {
