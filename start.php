@@ -676,9 +676,30 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                             {
 
 
-                                                // INSPECT NETWORK and connect only the network on same IP range of the requester
+                                                // WIP : Update the service
+                                                // Peut etre utilisé un tableau global _TOADD_TO_NETWORK et géré ca périodiquement ?
+
+                                                $client->serviceInspect('dns_dns-helper')->then(function($objectDnsHelper) use ($client,$network)
+                                                {
+                                                    $version = $objectDnsHelper['Version']['Index'] ?? 0;
+                                                    $newObject = $objectDnsHelper;
+                                                    // add a network to newObject
+                                                    $newObject['Spec']['TaskTemplate']['ContainerSpec']['Networks'] = [
+                                                        [
+                                                            'Target' => $network['NetworkID'],
+                                                        ]
+                                                    ];
+                                                    $client->serviceUpdate($objectDnsHelper['ID'], $version , $newObject )->then(function ($result) {
+
+                                                    });
+
+                                                }) ;
 
 
+
+                                                /*
+                                                 *
+                                                 * Ne fonctionne pas en mode swarm , il faut update le service dns helper (ou qu'il soit pret a la creation du service customdns)
                                                 $client->networkInspect($network['NetworkID'])->then(function (array $networkInspectInfo) use ($client, $service, $serviceName, $data, &$_CACHE, &$_TORESEND, $task,$network,$resolverClientContainerId,$dnsHelperContainerId) {
 
                                                     if (!isset($_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']])) {
@@ -697,36 +718,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                         $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
                                                     }
 
-                                                    /*
-                                                    foreach ($networkInspectInfo['Containers'] as $searchingSourceContainerID => $searchingSourceContainerInfo)
-                                                    {
-
-                                                        // real IP is here
-
-                                                        if ($searchingSourceContainerID == $resolverClientContainerId) {
-
-                                                            if (!isset($_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']])) {
-                                                                // On se connecte dans le réseau qui est aussi dans le réseau du demandeur
-                                                                echo "Network: " . $network['NetworkID'] . PHP_EOL;
-                                                                echo "Addr:" . $network['Addr'] . PHP_EOL;
-                                                                echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $task['Status']['ContainerStatus']['ContainerID'] . PHP_EOL;
-                                                                // ASK DNS HELPER to join NETWORK
-                                                                $client->networkConnect($network['NetworkID'], $task['Status']['ContainerStatus']['ContainerID'])->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                                                                    echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
-                                                                })->otherwise(function (Exception $e) {
-                                                                    echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
-                                                                });
-
-                                                                $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
-                                                            }
-
-                                                        }
-
-                                                    }
-                                                    */
-
 
                                                 });
+                                                */
 
                                             }
 

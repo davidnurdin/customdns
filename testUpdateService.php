@@ -1,0 +1,46 @@
+<?php
+// IMPORTANT : docker node promote swarm-2 swarm-3
+declare(strict_types=1);
+
+
+use CatFerq\ReactPHPDNS\Entities\Header;
+use CatFerq\ReactPHPDNS\Entities\ResourceRecord;
+use CatFerq\ReactPHPDNS\Enums\RecordTypeEnum;
+use CatFerq\ReactPHPDNS\Exceptions\UnsupportedTypeException;
+use CatFerq\ReactPHPDNS\Resolvers\ResolverInterface;
+use CatFerq\ReactPHPDNS\Services\Decoder;
+use CatFerq\ReactPHPDNS\Services\Encoder;
+use React\Datagram\Factory;
+use React\Datagram\Socket;
+use React\Datagram\SocketInterface;
+use React\EventLoop\Loop;
+use React\EventLoop\LoopInterface;
+use React\Promise\Deferred;
+use React\Promise\PromiseInterface;
+use React\Socket\Connector;
+
+include 'src/Server.php';
+include 'src/Resolvers/ResolverInterface.php';
+
+// autoload
+include 'vendor/autoload.php';
+
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
+$client = new Clue\React\Docker\Client();
+
+$client->serviceInspect('dns_dns-helper')->then(function($objectDnsHelper) use ($client,$network)
+{
+    $version = $objectDnsHelper['Version']['Index'] ?? 0;
+    $newObject = $objectDnsHelper;
+    // add a network to newObject
+    $newObject['Spec']['TaskTemplate']['ContainerSpec']['Networks'] = [
+        [
+            'Target' => $network['NetworkID'],
+        ]
+    ];
+    $client->serviceUpdate($objectDnsHelper['ID'], $version , $newObject )->then(function ($result) {
+
+    });
+
+}) ;

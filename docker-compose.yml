@@ -60,15 +60,6 @@ services:
           rm -f /var/run/dns-helper/helper.sock
           microsocks -p 1080 -i 127.0.0.1 &
           exec socat  -d -d -v UNIX-LISTEN:/var/run/dns-helper/helper.sock,fork,reuseaddr,backlog=512 TCP:127.0.0.1:1080
-<<<<<<< HEAD
-          #      networks:
-          #        - helper
-          #        - test-network-mysql
-=======
-      networks:
-        - helper
-        - test-network-mysql # peut etre : il y a un bug dans docker network connect => malgré le fait de rejoindre le réseau le container se retrouve "isolé" sur certain node de facon aléatoire..
->>>>>>> 6bdd463192b0bdc508d1dbfcc329ec76bcd918db
       volumes:
         - socketShare:/var/run/dns-helper
       deploy:
