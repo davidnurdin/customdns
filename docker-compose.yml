@@ -50,16 +50,17 @@ services:
           restart_policy:
               condition: on-failure
     dns-helper:
-      image: debian:stable-slim
-      entrypoint: ["/bin/bash"]
-      command:
-        - "-eucx"
-        - |
-          apt-get update
-          apt-get install -y socat microsocks
-          rm -f /var/run/dns-helper/helper.sock
-          microsocks -p 1080 -i 127.0.0.1 &
-          exec socat  -d -d -v UNIX-LISTEN:/var/run/dns-helper/helper.sock,fork,reuseaddr,backlog=512 TCP:127.0.0.1:1080
+      image: davidnurdin/dns-helper:latest
+#      image: debian:stable-slim
+#      entrypoint: ["/bin/bash"]
+#      command:
+#        - "-eucx"
+#        - |
+#          apt-get update
+#          apt-get install -y socat microsocks
+#          rm -f /var/run/dns-helper/helper.sock
+#          microsocks -p 1080 -i 127.0.0.1 &
+#          exec socat  -d -d -v UNIX-LISTEN:/var/run/dns-helper/helper.sock,fork,reuseaddr,backlog=512 TCP:127.0.0.1:1080
       volumes:
         - socketShare:/var/run/dns-helper
       deploy:
