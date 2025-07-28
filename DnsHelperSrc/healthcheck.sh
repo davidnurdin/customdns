@@ -1,8 +1,8 @@
 #!/bin/bash -x
 
-echo "Waiting.."
+#echo "Waiting.."
 # custom sleep between 5 and 10 sec
-sleep $((RANDOM % 6 + 5))
+# sleep $((RANDOM % 6 + 5))
 
 # Ensure directory exists
 mkdir -p /var/run/dns-helper
