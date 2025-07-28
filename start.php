@@ -636,9 +636,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $_CACHE[$data['infos']['domain']]['ipsActive'] = [];
                 $_CACHE[$data['infos']['domain']]['active'] = false;
 
-
-                $this->getDnsHelperContainerId()->then(function ($dnsHelperContainerId) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                $this->getRequesterAsync($serviceName,$data)->then(function ($infos) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND,$dnsHelperContainerId) {
+                $this->getRequesterAsync($serviceName,$data)->then(function ($infos) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
                     [$resolverClientContainerId,$ipAsker] = $infos ;
 
                     echo "=======||||||||||||||||||||||||||||========== " .  $ipAsker . " on the container : " . $resolverClientContainerId . " has ask for service : " . $serviceName . PHP_EOL;
@@ -646,12 +644,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     $_CACHE[$data['infos']['domain']]['ipNat'][$ipClient] = $ipAsker; // store the IP of the container on the same network
 
                     $client = new Clue\React\Docker\Client();
-                    $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$dnsHelperContainerId) {
+                    $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker) {
                         foreach ($services as $service) {
                             if ($service['Spec']['Name'] == $serviceName) {
 
 
-                                $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$dnsHelperContainerId) {
+                                $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
                                     // filter task get only Running AND have Addresses
@@ -667,7 +665,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     $_CACHE[$data['infos']['domain']]['networks'] = [];
 
                                     foreach ($tasks as $task) {
-                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName,$resolverClientContainerId,$ipAsker,$dnsHelperContainerId) {
+                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName,$resolverClientContainerId,$ipAsker) {
                                             var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
 
@@ -787,7 +785,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 }
 
               ) ;
-                });
 
 
             }

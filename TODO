@@ -1,4 +1,5 @@
 IDEE : si on répondais aussi sur le patern "test-mysql" , on pourrai répondre tout le temps et quand le serveur tombe en panne : ca fallback sur le resolveur interne de docker (zero downtime et on n'aurai pas a modifié les config)
+attention il faut bien faire du round robin pour respecté le fonctionnement de base de docker
 
 
 -----------------
