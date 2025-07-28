@@ -10,6 +10,7 @@ use CatFerq\ReactPHPDNS\Exceptions\UnsupportedTypeException;
 use CatFerq\ReactPHPDNS\Resolvers\ResolverInterface;
 use CatFerq\ReactPHPDNS\Services\Decoder;
 use CatFerq\ReactPHPDNS\Services\Encoder;
+use React\ChildProcess\Process;
 use React\Datagram\Factory;
 use React\Datagram\Socket;
 use React\Datagram\SocketInterface;
@@ -676,24 +677,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                             {
 
 
-                                                // WIP : Update the service
-                                                // Peut etre utilisé un tableau global _TOADD_TO_NETWORK et géré ca périodiquement ?
-
-                                                $client->serviceInspect('dns_dns-helper')->then(function($objectDnsHelper) use ($client,$network)
-                                                {
-                                                    $version = $objectDnsHelper['Version']['Index'] ?? 0;
-                                                    $newObject = $objectDnsHelper;
-                                                    // add a network to newObject
-                                                    $newObject['Spec']['TaskTemplate']['ContainerSpec']['Networks'] = [
-                                                        [
-                                                            'Target' => $network['NetworkID'],
-                                                        ]
-                                                    ];
-                                                    $client->serviceUpdate($objectDnsHelper['ID'], $version , $newObject )->then(function ($result) {
-
-                                                    });
-
-                                                }) ;
+                                                // $network['NetworkID']
+                                                $process = new Process('/usr/local/bin/php /app/addNetwork.php ' . escapeshellarg($network['NetworkID']) );
+                                                $process->start();
 
 
 
