@@ -30,6 +30,25 @@ services:
         replicas: 3
         restart_policy:
           condition: on-failure
+    test-web2:
+      # to test : dig tasksActive.all.dns_test-mysql
+      image: debian:latest
+      networks:
+        - test-network-mysql
+      entrypoint: ["/bin/bash"]
+      command:
+        - "-eucx"
+        - |
+          printf 'nameserver 172.17.0.1\nnameserver 127.0.0.11\nsearch .\noptions ndots:0\n' > /etc/resolv.conf
+          apt-get update
+          apt-get install -y procps telnet dnsutils inetutils-ping
+          exec sleep infinity
+      deploy:
+        placement:
+          max_replicas_per_node: 1
+        replicas: 3
+        restart_policy:
+          condition: on-failure
     test-mysql:
         image: debian:latest
         entrypoint: ["/bin/bash"]
