@@ -55,9 +55,6 @@ $client->serviceInspect('dns_dns-helper',false)->then(function($objectDnsHelper)
         $newNetwork->Target = $network['NetworkID'];
         $newObject->TaskTemplate->Networks[] = $newNetwork;
 
-        $newObject->TaskTemplate->ContainerSpec->ForceUpdate = 1 ;
-
-
         $client->serviceUpdate($objectDnsHelper->ID, $version, $newObject)->then(function ($result) use ($client) {
             // show the status
             checkStatus($client);
