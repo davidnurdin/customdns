@@ -232,7 +232,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             $ip = $_SERVER['argv'][1];
 
         if (isset($_SERVER['argv'][2]))
-            $port = $_SERVER['argv'][2];
+            $port = (int) $_SERVER['argv'][2];
 
         $context = stream_context_create(array(
             'socket' => array(
