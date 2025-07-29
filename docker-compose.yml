@@ -75,7 +75,7 @@ services:
       deploy:
         mode: global
 
-    customdns:
+    customdns1:
         image: davidnurdin/customdns:latest
         volumes:
           - type: bind
@@ -90,4 +90,20 @@ services:
           mode: global  # un container par host
           restart_policy:
             condition: any
+
+    customdns2:
+      image: davidnurdin/customdns:latest
+      volumes:
+        - type: bind
+          source: /var/run/docker.sock
+          target: /var/run/docker.sock
+        - socketShare:/var/run/dns-helper
+        # only in dev !
+        - ./start.php:/app/start.php
+      networks:
+        - host
+      deploy:
+        mode: global  # un container par host
+        restart_policy:
+          condition: any
 
