@@ -16,7 +16,6 @@ les connexion sont pas fermés
 
 
 - on pourrais limité peut etre les down si on avait 2 service dnsHelper (et deux socket), comme ca pendant l integration a un network .. si l un repond pas , on prend l autre
-- idem : doubler les dns php
 
 
 - si un container du swarm interroge 172.17.0.1 , via tasksActive. il a acces a tout les service name du swarm qui sont interrogé , c est problematique
