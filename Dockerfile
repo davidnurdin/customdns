@@ -8,4 +8,3 @@ COPY . /app
 
 CMD ["start.php","172.17.0.1"]
 ENTRYPOINT ["/usr/local/bin/php"]
-
