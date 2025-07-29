@@ -102,7 +102,12 @@ class myResolver implements ResolverInterface
 
         [$isValid, $server, $domain] = $this->extractInfo($domainAsked);
 
-        //var_dump("=====>" . var_export($isValid, true) . " , " . $domainAsked . " , " . $domain);
+//        if (!$isValid)
+//        {
+//            // WIP : j'aimerais resoudre aussi test-mysql (donc sans le nom de la stack , au passage..) : il faudrais prendre en compte la source (le nom de la stack) et le prefixé
+//            // Si cette fonctionnalité fonctionne, en cas de panne du serveur dns, il utilisera le serveur de secours interne de docker (moins fiable mais toujours fonctionnel)
+//            //   [$isValid, $server, $domain] = $this->extractInfo('tasksActive.all.' . $domainAsked);
+//        }
 
         if (!$isValid) // !preg_match('/^tasksActive\.(all|[a-zA-Z0-9]+)\.([a-zA-Z0-9-_]+)\.$/', $domain, $matches))
         {
@@ -128,7 +133,7 @@ class myResolver implements ResolverInterface
                              if ($ip['canBeJoin']) {
                                  $answers[] = (new ResourceRecord())
                                      ->setQuestion(false)
-                                     ->setTtl(1)
+                                     ->setTtl(time() - $_CACHE['lastEmpty'])
                                      ->setType(RecordTypeEnum::TYPE_A)
                                      ->setName($domainAsked . '.')
                                      ->setRdata($ip['ip']);
@@ -242,7 +247,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $this->resolver->server = $this;
 
         $this->loop->addPeriodicTimer(1, fn() => $this->retryResend());
-        $this->loop->addPeriodicTimer(30, fn() => $this->emptyCache());
+        $_CACHE['lastEmpty'] = time();
+        $this->loop->addPeriodicTimer(120, fn() => $this->emptyCache());
 
     }
 
@@ -260,7 +266,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             unset($_CACHE[$domain]);
         }
 
-
+        $_CACHE['lastEmpty'] = time();
         echo "Cache clear at " . date('Y-m-d H:i:s') . PHP_EOL;
     }
 
