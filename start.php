@@ -2,6 +2,8 @@
 // IMPORTANT : docker node promote swarm-2 swarm-3
 declare(strict_types=1);
 
+$GLOBALS['clearTimeoutSec'] = 10 ; // VARS
+
 
 use CatFerq\ReactPHPDNS\Entities\Header;
 use CatFerq\ReactPHPDNS\Entities\ResourceRecord;
@@ -247,7 +249,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $this->resolver->server = $this;
 
         $this->loop->addPeriodicTimer(1, fn() => $this->retryResend());
-        $GLOBALS['clearTimeoutSec'] = 10 ;
+
         $this->emptyCache() ;
         $this->loop->addPeriodicTimer($GLOBALS['clearTimeoutSec'], fn() => $this->emptyCache());
 
