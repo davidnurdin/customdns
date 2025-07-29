@@ -5,7 +5,6 @@ volumes:
 
 networks:
   test-network-mysql:
-  helper:
   host:
     name: "host"
     external: true
