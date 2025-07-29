@@ -262,8 +262,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         $this->emptyCache() ;
 
-        echo "Process will be kill in : " . $GLOBALS['kill' . $GLOBALS['instance'] . 'After'] . " seconds." . PHP_EOL;
-        
+        echo date('Y/m/d H:i:s') . " => Process will be kill in : " . $GLOBALS['kill' . $GLOBALS['instance'] . 'After'] . " seconds." . PHP_EOL;
+
         $this->loop->addTimer($GLOBALS['kill' . $GLOBALS['instance'] . 'After'], function () {
             echo "Killing process after " . $GLOBALS['kill' . $GLOBALS['instance'] . 'After'] . " seconds." . PHP_EOL;
             exit(0);
