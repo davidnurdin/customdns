@@ -92,7 +92,10 @@ services:
             condition: any
 
     customdns2:
-      image: davidnurdin/customdns:latest
+      image: davidnurdin/customdns
+      # Fallback
+      command:
+        - "172.17.0.1 53 300 2"
       volumes:
         - type: bind
           source: /var/run/docker.sock
