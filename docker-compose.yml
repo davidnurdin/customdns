@@ -90,3 +90,4 @@ services:
           mode: global  # un container par host
           restart_policy:
             condition: any
+
