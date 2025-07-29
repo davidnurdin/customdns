@@ -3,9 +3,10 @@
 declare(strict_types=1);
 
 if (!isset($argv[3]))
-    $argv[3] = 60 ;
+    $argv[3] = 60 * 5  ;
 
 $GLOBALS['clearTimeoutSec'] = $argv[3] ; // 60 * 5 ; // On vide le cache tt les 5 min
+$GLOBALS['killAfter'] = 60 * 10 ;
 
 
 use CatFerq\ReactPHPDNS\Entities\Header;
