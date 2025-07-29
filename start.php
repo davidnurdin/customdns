@@ -5,7 +5,7 @@ declare(strict_types=1);
 if (!isset($argv[3]))
     $argv[3] = 30 ;
 
-$GLOBALS['clearTimeoutSec'] = $argv[2] ; // 60 * 5 ; // On vide le cache tt les 5 min
+$GLOBALS['clearTimeoutSec'] = $argv[3] ; // 60 * 5 ; // On vide le cache tt les 5 min
 
 
 use CatFerq\ReactPHPDNS\Entities\Header;
