@@ -5,8 +5,12 @@ declare(strict_types=1);
 if (!isset($argv[3]))
     $argv[3] = 60 * 5  ;
 
+if (!isset($argv[4]))
+    $argv[4] = 1  ;
+
 $GLOBALS['clearTimeoutSec'] = $argv[3] ; // 60 * 5 ; // On vide le cache tt les 5 min
 
+$GLOBALS['instance'] = $argv[4] ;
 $GLOBALS['kill1After'] = 30 ; // 60 * 10 ;
 $GLOBALS['kill2After'] = 45 ; // 60 * 15 ;
 
