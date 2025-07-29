@@ -107,3 +107,18 @@ services:
         restart_policy:
           condition: any
 
+    customdns3:
+      image: davidnurdin/customdns
+      # Fallback
+      command: [ "start.php","172.17.0.1","53","300","3" ] # port 53 , cache 300s, #instance N2
+      volumes:
+        - type: bind
+          source: /var/run/docker.sock
+          target: /var/run/docker.sock
+        - socketShare:/var/run/dns-helper
+      networks:
+        - host
+      deploy:
+        mode: global  # un container par host
+        restart_policy:
+          condition: any
