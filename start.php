@@ -8,13 +8,17 @@ if (!isset($argv[3]))
 if (!isset($argv[4]))
     $argv[4] = 1  ;
 
+if (!isset($argv[5]))
+    $argv[5] = 'dns-helper'  ;
+
+
 $GLOBALS['clearTimeoutSec'] = $argv[3] ; // 60 * 5 ;
 
 $GLOBALS['instance'] = $argv[4] ;
 $GLOBALS['kill1After'] = 60*6 ;
 $GLOBALS['kill2After'] = 60*8 ;
 $GLOBALS['kill3After'] = 60*10 ;
-
+$GLOBALS['DNS-HELPER-NAME'] = $argv[5] ; // 'dns-helper' ; WIP todo
 
 use CatFerq\ReactPHPDNS\Entities\Header;
 use CatFerq\ReactPHPDNS\Entities\ResourceRecord;

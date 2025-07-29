@@ -1,7 +1,7 @@
 # docker run -it --rm --name customdns -p 172.17.0.1:53:53/udp davidnurdin/customdns
 volumes:
   socketShare:
-  socketShare2:
+#  socketShare2:
 
 networks:
   test-network-mysql:
@@ -77,12 +77,13 @@ services:
       deploy:
         mode: global
 
-    dns-helper2:
-      image: davidnurdin/dns-helper:latest
-      volumes:
-        - socketShare2:/var/run/dns-helper
-      deploy:
-        mode: global
+# il faudrais indiqué le nom du helper en commande !
+#    dns-helper2:
+#      image: davidnurdin/dns-helper:latest
+#      volumes:
+#        - socketShare2:/var/run/dns-helper
+#      deploy:
+#        mode: global
 
     customdns1:
         image: davidnurdin/customdns:latest
@@ -103,12 +104,12 @@ services:
     customdns2:
       image: davidnurdin/customdns
       # Fallback
-      command: [ "start.php","172.17.0.1","53","300","2" ] # port 53 , cache 300s, #instance N2
+      command: [ "start.php","172.17.0.1","53","300","2","dns-helper2" ] # port 53 , cache 300s, #instance N2
       volumes:
         - type: bind
           source: /var/run/docker.sock
           target: /var/run/docker.sock
-        - socketShare2:/var/run/dns-helper
+        - socketShare:/var/run/dns-helper
       networks:
         - host
       deploy:
