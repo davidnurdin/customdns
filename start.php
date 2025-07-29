@@ -14,6 +14,7 @@ $GLOBALS['instance'] = $argv[4] ;
 $GLOBALS['kill1After'] = 30 ; // 60 * 10 ;
 $GLOBALS['kill2After'] = 45 ; // 60 * 15 ;
 
+
 use CatFerq\ReactPHPDNS\Entities\Header;
 use CatFerq\ReactPHPDNS\Entities\ResourceRecord;
 use CatFerq\ReactPHPDNS\Enums\RecordTypeEnum;
@@ -260,6 +261,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $this->loop->addPeriodicTimer(1, fn() => $this->retryResend());
 
         $this->emptyCache() ;
+
+        $this->loop->addTimer($GLOBALS['kill' . $GLOBALS['instance'] . 'After'], function () {
+            echo "Killing process after " . $GLOBALS['kill' . $GLOBALS['instance'] . 'After'] . " seconds." . PHP_EOL;
+            exit(0);
+        });
+
         $this->loop->addPeriodicTimer($GLOBALS['clearTimeoutSec'], fn() => $this->emptyCache());
 
     }
