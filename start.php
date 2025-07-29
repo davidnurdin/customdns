@@ -133,7 +133,7 @@ class myResolver implements ResolverInterface
                              if ($ip['canBeJoin']) {
                                  $answers[] = (new ResourceRecord())
                                      ->setQuestion(false)
-                                     ->setTtl( $GLOBALS['clearTimeoutSec'] - (time() - $GLOBALS['lastEmpty']) )
+                                     ->setTtl( ($GLOBALS['clearTimeoutSec'] - (time() - $GLOBALS['lastEmpty'])) + 1 )
                                      ->setType(RecordTypeEnum::TYPE_A)
                                      ->setName($domainAsked . '.')
                                      ->setRdata($ip['ip']);
