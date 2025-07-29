@@ -133,7 +133,7 @@ class myResolver implements ResolverInterface
                              if ($ip['canBeJoin']) {
                                  $answers[] = (new ResourceRecord())
                                      ->setQuestion(false)
-                                     ->setTtl( (time() - $_GLOBALS['lastEmpty']) )
+                                     ->setTtl( (time() - $GLOBALS['lastEmpty']) )
                                      ->setType(RecordTypeEnum::TYPE_A)
                                      ->setName($domainAsked . '.')
                                      ->setRdata($ip['ip']);
@@ -247,9 +247,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $this->resolver->server = $this;
 
         $this->loop->addPeriodicTimer(1, fn() => $this->retryResend());
-        $_GLOBALS['clearTimeoutSec'] = 10 ;
+        $GLOBALS['clearTimeoutSec'] = 10 ;
         $this->emptyCache() ;
-        $this->loop->addPeriodicTimer($_GLOBALS['clearTimeoutSec'], fn() => $this->emptyCache());
+        $this->loop->addPeriodicTimer($GLOBALS['clearTimeoutSec'], fn() => $this->emptyCache());
 
     }
 
@@ -267,7 +267,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             unset($_CACHE[$domain]);
         }
 
-        $_GLOBALS['lastEmpty'] = time();
+        $GLOBALS['lastEmpty'] = time();
         echo "Cache clear at " . date('Y-m-d H:i:s') . PHP_EOL;
     }
 
