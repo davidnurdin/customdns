@@ -2,7 +2,7 @@
 // IMPORTANT : docker node promote swarm-2 swarm-3
 declare(strict_types=1);
 
-$GLOBALS['clearTimeoutSec'] = 60 * 5 ; // On vide le cache tt les 5 min 
+$GLOBALS['clearTimeoutSec'] = 60 * 5 ; // On vide le cache tt les 5 min
 
 
 use CatFerq\ReactPHPDNS\Entities\Header;
