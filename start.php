@@ -2,8 +2,8 @@
 // IMPORTANT : docker node promote swarm-2 swarm-3
 declare(strict_types=1);
 
-if (!isset($argv[2]))
-    $argv[2] = 30 ;
+if (!isset($argv[3]))
+    $argv[3] = 30 ;
 
 $GLOBALS['clearTimeoutSec'] = $argv[2] ; // 60 * 5 ; // On vide le cache tt les 5 min
 
