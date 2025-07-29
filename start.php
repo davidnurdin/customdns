@@ -247,9 +247,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $this->resolver->server = $this;
 
         $this->loop->addPeriodicTimer(1, fn() => $this->retryResend());
-        $_CACHE['clearTimeoutSec'] = 10 ;
+        $_GLOBALS['clearTimeoutSec'] = 10 ;
         $this->emptyCache() ;
-        $this->loop->addPeriodicTimer($_CACHE['clearTimeoutSec'], fn() => $this->emptyCache());
+        $this->loop->addPeriodicTimer($_GLOBALS['clearTimeoutSec'], fn() => $this->emptyCache());
 
     }
 
@@ -267,7 +267,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             unset($_CACHE[$domain]);
         }
 
-        $_CACHE['lastEmpty'] = time();
+        $_GLOBALS['lastEmpty'] = time();
         echo "Cache clear at " . date('Y-m-d H:i:s') . PHP_EOL;
     }
 
