@@ -7,8 +7,8 @@ if (!isset($argv[3]))
 
 $GLOBALS['clearTimeoutSec'] = $argv[3] ; // 60 * 5 ; // On vide le cache tt les 5 min
 
-$GLOBALS['kill1After'] = 60 * 10 ;
-$GLOBALS['kill2After'] = 60 * 15 ;
+$GLOBALS['kill1After'] = 30 ; // 60 * 10 ;
+$GLOBALS['kill2After'] = 45 ; // 60 * 15 ;
 
 use CatFerq\ReactPHPDNS\Entities\Header;
 use CatFerq\ReactPHPDNS\Entities\ResourceRecord;
