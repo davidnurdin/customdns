@@ -94,7 +94,7 @@ services:
     customdns2:
       image: davidnurdin/customdns
       # Fallback
-      command: [ "start.php","172.17.0.1","53","300","2" ]
+      command: [ "start.php","172.17.0.1","53","300","2" ] # port 53 , cache 300s, #instance N2
       volumes:
         - type: bind
           source: /var/run/docker.sock
