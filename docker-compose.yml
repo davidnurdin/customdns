@@ -1,7 +1,7 @@
 # docker run -it --rm --name customdns -p 172.17.0.1:53:53/udp davidnurdin/customdns
 volumes:
   socketShare:
-#  socketShare2:
+  socketShare2:
 
 networks:
   test-network-mysql:
@@ -109,7 +109,7 @@ services:
         - type: bind
           source: /var/run/docker.sock
           target: /var/run/docker.sock
-        - socketShare:/var/run/dns-helper
+        - socketShare2:/var/run/dns-helper
       networks:
         - host
       deploy:
