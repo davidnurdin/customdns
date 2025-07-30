@@ -9,7 +9,7 @@ if (!isset($argv[4]))
     $argv[4] = 1  ;
 
 if (!isset($argv[5]))
-    $argv[5] = 'dns-helper'  ;
+    $argv[5] = 'dns_dns-helper'  ;
 
 
 $GLOBALS['clearTimeoutSec'] = $argv[3] ; // 60 * 5 ;
@@ -568,6 +568,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
     public function getDnsHelperContainerId()
     {
+        // Not use
+        /*
         $deferredRequester = new Deferred();
         $client = new Clue\React\Docker\Client();
         $client->containerList()->then(function ($listContainer) use ($deferredRequester)
@@ -595,6 +597,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         return $deferredRequester->promise();
 
+        */
     }
     public function getRequesterAsync($serviceName,$data)
     {
@@ -708,7 +711,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
 
                                                 // $network['NetworkID']
-                                                $process = new Process('/usr/local/bin/php /app/addNetwork.php ' . escapeshellarg($network['NetworkID']) );
+                                                $process = new Process('/usr/local/bin/php /app/addNetwork.php ' . escapeshellarg($network['NetworkID']) . " " . escapeshellarg($GLOBALS['DNS-HELPER-NAME']) );
                                                 $process->start();
 
 

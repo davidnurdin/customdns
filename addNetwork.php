@@ -32,9 +32,14 @@ $client = new Clue\React\Docker\Client();
 $network = [] ;
 $network['NetworkID'] = $argv[1] ; // 'dns_test-network-mysql' ; // 'dns_test-network-mysql'
 
-$client->serviceInspect('dns_dns-helper',false)->then(function($objectDnsHelper) use ($client,$network)
+if (isset($argv[2]))
+    $dnsHelperName = $argv[2] ;
+else
+    $dnsHelperName = 'dns_dns-helper' ;
+
+$client->serviceInspect($dnsHelperName,false)->then(function($objectDnsHelper) use ($client,$network,$dnsHelperName)
 {
-    $client->networkInspect($network['NetworkID'])->then(function($objectNetwork) use ($client,$network,$objectDnsHelper)
+    $client->networkInspect($network['NetworkID'])->then(function($objectNetwork) use ($client,$network,$objectDnsHelper,$dnsHelperName)
     {
         $network['NetworkID'] = $objectNetwork['Id'] ;
 
@@ -55,9 +60,9 @@ $client->serviceInspect('dns_dns-helper',false)->then(function($objectDnsHelper)
         $newNetwork->Target = $network['NetworkID'];
         $newObject->TaskTemplate->Networks[] = $newNetwork;
 
-        $client->serviceUpdate($objectDnsHelper->ID, $version, $newObject)->then(function ($result) use ($client) {
+        $client->serviceUpdate($objectDnsHelper->ID, $version, $newObject)->then(function ($result) use ($client,$dnsHelperName) {
             // show the status
-            checkStatus($client);
+            checkStatus($client,$dnsHelperName);
             var_dump($result);
 
         });
@@ -65,16 +70,16 @@ $client->serviceInspect('dns_dns-helper',false)->then(function($objectDnsHelper)
 
 }) ;
 
-function checkStatus($client)
+function checkStatus($client,$dnsHelperName)
 {
-        $client->serviceInspect('dns_dns-helper',false)->then(function($objectDnsHelper) use ($client) {
+        $client->serviceInspect($dnsHelperName,false)->then(function($objectDnsHelper) use ($client,$dnsHelperName) {
             if (isset($objectDnsHelper->UpdateStatus)) {
                 if ($objectDnsHelper->UpdateStatus->State === 'completed') {
                     echo "Service update completed" . PHP_EOL;
                 } elseif ($objectDnsHelper->UpdateStatus->State === 'updating') {
                     echo "Service is still updating" . PHP_EOL;
                     $loop = Loop::get();
-                    $loop->addTimer(0.1, fn() => checkStatus($client));
+                    $loop->addTimer(0.1, fn() => checkStatus($client,$dnsHelperName));
                 } else {
                     echo "Service state: " . $objectDnsHelper->State . PHP_EOL;
                 }
@@ -83,7 +88,7 @@ function checkStatus($client)
             {
                 echo "Service update status not available" . PHP_EOL;
                 $loop = Loop::get();
-                $loop->addTimer(0.1, fn() => checkStatus($client));
+                $loop->addTimer(0.1, fn() => checkStatus($client,$dnsHelperName));
             }
         });
 }

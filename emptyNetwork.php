@@ -27,8 +27,13 @@ include 'vendor/autoload.php';
 
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
+if (isset($argv[1]))
+    $dnsHelperName = $argv[1] ;
+else
+    $dnsHelperName = 'dns_dns-helper' ;
+
 $client = new Clue\React\Docker\Client();
-$client->serviceInspect('dns_dns-helper',false)->then(function($objectDnsHelper) use ($client)
+$client->serviceInspect($dnsHelperName,false)->then(function($objectDnsHelper) use ($client,$dnsHelperName)
 {
     $version = $objectDnsHelper->Version->Index ?? 0;
     echo "VERSION: " . $version . PHP_EOL;
@@ -40,24 +45,24 @@ $client->serviceInspect('dns_dns-helper',false)->then(function($objectDnsHelper)
     }
 
     $newObject->TaskTemplate->Networks = [] ;
-    $client->serviceUpdate($objectDnsHelper->ID, $version, $newObject)->then(function ($result) use ($client) {
+    $client->serviceUpdate($objectDnsHelper->ID, $version, $newObject)->then(function ($result) use ($client,$dnsHelperName) {
         // show the status
-        checkStatus($client);
+        checkStatus($client,$dnsHelperName);
         var_dump($result);
 
     });
 }) ;
 
-function checkStatus($client)
+function checkStatus($client,$dnsHelperName)
 {
-        $client->serviceInspect('dns_dns-helper',false)->then(function($objectDnsHelper) use ($client) {
+        $client->serviceInspect($dnsHelperName,false)->then(function($objectDnsHelper) use ($client,$dnsHelperName) {
             if (isset($objectDnsHelper->UpdateStatus)) {
                 if ($objectDnsHelper->UpdateStatus->State === 'completed') {
                     echo "Service update completed" . PHP_EOL;
                 } elseif ($objectDnsHelper->UpdateStatus->State === 'updating') {
                     echo "Service is still updating" . PHP_EOL;
                     $loop = Loop::get();
-                    $loop->addTimer(0.1, fn() => checkStatus($client));
+                    $loop->addTimer(0.1, fn() => checkStatus($client,$dnsHelperName));
                 } else {
                     echo "Service state: " . $objectDnsHelper->State . PHP_EOL;
                 }
@@ -66,7 +71,7 @@ function checkStatus($client)
             {
                 echo "Service update status not available" . PHP_EOL;
                 $loop = Loop::get();
-                $loop->addTimer(0.1, fn() => checkStatus($client));
+                $loop->addTimer(0.1, fn() => checkStatus($client,$dnsHelperName));
             }
         });
 }
