@@ -93,7 +93,7 @@ services:
             target: /var/run/docker.sock
           - socketShare:/var/run/dns-helper
           # only in dev !
-          - ./start.php:/app/start.php
+#          - ./start.php:/app/start.php
         networks:
           - host
         deploy:
@@ -101,18 +101,18 @@ services:
           restart_policy:
             condition: any
 
-#    customdns2:
-#      image: davidnurdin/customdns
-#      # Fallback
-#      command: [ "start.php","172.17.0.1","53","300","2","dns_dns-helper" ] # port 53 , cache 300s, #instance N2
-#      volumes:
-#        - type: bind
-#          source: /var/run/docker.sock
-#          target: /var/run/docker.sock
-#        - socketShare:/var/run/dns-helper
-#      networks:
-#        - host
-#      deploy:
-#        mode: global  # un container par host
-#        restart_policy:
-#          condition: any
+    customdns2:
+      image: davidnurdin/customdns
+      # Fallback
+      command: [ "start.php","172.17.0.1","53","300","2","dns_dns-helper" ] # port 53 , cache 300s, #instance N2
+      volumes:
+        - type: bind
+          source: /var/run/docker.sock
+          target: /var/run/docker.sock
+        - socketShare:/var/run/dns-helper
+      networks:
+        - host
+      deploy:
+        mode: global  # un container par host
+        restart_policy:
+          condition: any
