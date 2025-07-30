@@ -689,8 +689,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 $client->taskList($service['ID'])->then(function (array $tasks) use (&$_TORESOLVE,$service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$domain) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
-                                    var_dump($tasks);
-                                    die();
                                     
                                     // filter task get only Running AND have Addresses
                                     $tasks = array_filter($tasks, function ($task) {
