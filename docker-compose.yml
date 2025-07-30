@@ -109,7 +109,7 @@ services:
         - type: bind
           source: /var/run/docker.sock
           target: /var/run/docker.sock
-        - socketShare2:/var/run/dns-helper
+        - socketShare:/var/run/dns-helper
       networks:
         - host
       deploy:
