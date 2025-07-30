@@ -679,12 +679,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     $_CACHE[$data['infos']['domain']]['ipNat'][$ipClient] = $ipAsker; // store the IP of the container on the same network
 
                     $client = new Clue\React\Docker\Client();
-                    $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker) {
+                    $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$domain) {
                         foreach ($services as $service) {
                             if ($service['Spec']['Name'] == $serviceName) {
 
 
-                                $client->taskList($service['ID'])->then(function (array $tasks) use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker) {
+                                $client->taskList($service['ID'])->then(function (array $tasks) use (&$_TORESOLVE,$service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$domain) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
                                     // filter task get only Running AND have Addresses
@@ -700,7 +700,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     $_CACHE[$data['infos']['domain']]['networks'] = [];
 
                                     foreach ($tasks as $task) {
-                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use ($service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName,$resolverClientContainerId,$ipAsker) {
+                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use (&$_TORESOLVE,$service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName,$resolverClientContainerId,$ipAsker,$domain) {
                                             var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
 
@@ -763,9 +763,16 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 // met a jour l'ip du demandeur (par défaut il utilise l'ip 172.xxx)
                                                 //$data['infos']['client']
 
+                                                $timerOutConnectivity = $this->loop->addTimer(5,function() use (&$_TORESOLVE,$data,$domain) {
+                                                    // no testIpConnectivity ... we relaunch
+                                                    $_TORESOLVE[$domain] = $data ;
+                                                }) ;
 
                                                 $this->testIpConnectivity($data['infos']['domain'], null,$ipAsker)
-                                                    ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND) {
+                                                    ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND,$timerOutConnectivity) {
+
+                                                        $this->loop->cancelTimer($timerOutConnectivity);
+
                                                         // Update the cache with the connectivity results
                                                         echo "=========+> SET ACTIVE DOMAIN : " . $data['infos']['domain'] . PHP_EOL;
 
