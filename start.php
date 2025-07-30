@@ -681,7 +681,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                     $_CACHE[$data['infos']['domain']]['ipNat'][$ipClient] = $ipAsker; // store the IP of the container on the same network
 
                     $client = new Clue\React\Docker\Client();
-                    $client->serviceList()->then(function (array $services) use ($client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$domain) {
+                    $client->serviceList()->then(function (array $services) use (&$_TORESOLVE,$client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$domain) {
                         foreach ($services as $service) {
                             if ($service['Spec']['Name'] == $serviceName) {
 
