@@ -695,6 +695,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     });
 
 
+
                                     // var_dump($data['infos']['client']);die();
 
                                     $_CACHE[$data['infos']['domain']]['nbTasksToResolve'] = count($tasks);
@@ -702,6 +703,11 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     $_CACHE[$data['infos']['domain']]['networks'] = [];
 
                                     foreach ($tasks as $task) {
+
+                                        echo "Status: " . $task['Status']['State'] . PHP_EOL;
+                                        echo "Node: " . $task['NodeID'] . PHP_EOL;
+                                        echo PHP_EOL;
+                                        
                                         $client->taskInspect($task['ID'])->then(function (array $taskDetails) use (&$_TORESOLVE,$service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName,$resolverClientContainerId,$ipAsker,$domain) {
                                             var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
@@ -804,9 +810,6 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                         });
 
 
-                                        echo "Status: " . $task['Status']['State'] . PHP_EOL;
-                                        echo "Node: " . $task['NodeID'] . PHP_EOL;
-                                        echo PHP_EOL;
                                     }
 
                                 })->otherwise(function (Exception $e) {
