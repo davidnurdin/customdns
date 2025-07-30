@@ -707,7 +707,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                         echo "Status: " . $task['Status']['State'] . PHP_EOL;
                                         echo "Node: " . $task['NodeID'] . PHP_EOL;
                                         echo PHP_EOL;
-                                        
+
+
                                         $client->taskInspect($task['ID'])->then(function (array $taskDetails) use (&$_TORESOLVE,$service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName,$resolverClientContainerId,$ipAsker,$domain) {
                                             var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
