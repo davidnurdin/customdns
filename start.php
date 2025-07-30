@@ -724,8 +724,11 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 // Add only if in same range of the asker
                                                 if ($this->resolver->isSameRange($ip,$ipAsker,$ipRange)) // TODO voir si ca pose pb ou non ?
                                                 {
-                                                    var_dump('ADDDDDDDDD : ==> ' . $ip . ' ===> NETWORK ASKER : ' . $ipAsker);
-                                                    $_CACHE[$data['infos']['domain']]['ips'][] = ['ip' => $ip];
+                                                    if ($ip !== $ipAsker) {
+                                                        var_dump('ADDDDDDDDD : ==> ' . $ip . ' ===> NETWORK ASKER : ' . $ipAsker);
+                                                        $_CACHE[$data['infos']['domain']]['ips'][] = ['ip' => $ip];
+                                                    }
+                                                    
                                                 }
                                             }
 
