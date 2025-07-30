@@ -728,7 +728,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                         var_dump('ADDDDDDDDD : ==> ' . $ip . ' ===> NETWORK ASKER : ' . $ipAsker);
                                                         $_CACHE[$data['infos']['domain']]['ips'][] = ['ip' => $ip];
                                                     }
-                                                    
+
                                                 }
                                             }
 
