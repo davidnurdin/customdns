@@ -93,7 +93,7 @@ services:
             target: /var/run/docker.sock
           - socketShare:/var/run/dns-helper
           # only in dev !
-          - ./start.php:/app/start.php
+          # - ./start.php:/app/start.php
         networks:
           - host
         deploy:
