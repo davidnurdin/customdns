@@ -663,6 +663,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
     public function resolveDocker()
     {
         global $_TORESOLVE, $_CACHE, $_TORESEND;
+        var_dump("cOUUUUUUUUUUUNT : " . count($_TORESOLVE));
+
         if (count($_TORESOLVE) > 0) {
             foreach ($_TORESOLVE as $domain => $data) {
 
