@@ -690,6 +690,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
                                     var_dump($tasks);
+                                    die();
                                     
                                     // filter task get only Running AND have Addresses
                                     $tasks = array_filter($tasks, function ($task) {
