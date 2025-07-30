@@ -769,7 +769,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                     // no testIpConnectivity ... we relaunch
                                                     echo "||||||||__________________|||||||||||||" . "RELAUNCH TEST IP CONNECTIVITY FOR DOMAIN : " . $domain . PHP_EOL;
                                                     $_TORESOLVE[$domain] = $data ;
-                                                    $this->loop->addTimer(0.1, fn() => $this->server->resolveDocker());
+                                                    $this->loop->addTimer(0.1, fn() => $this->resolveDocker());
                                                 }) ;
 
                                                 $this->testIpConnectivity($data['infos']['domain'], null,$ipAsker)
