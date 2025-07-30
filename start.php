@@ -765,11 +765,13 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                                 $timerOutConnectivity = $this->loop->addTimer(5,function() use (&$_TORESOLVE,$data,$domain) {
                                                     // no testIpConnectivity ... we relaunch
+                                                    echo "||||||||__________________|||||||||||||" . "RELAUNCH TEST IP CONNECTIVITY FOR DOMAIN : " . $domain . PHP_EOL;
                                                     $_TORESOLVE[$domain] = $data ;
                                                 }) ;
 
                                                 $this->testIpConnectivity($data['infos']['domain'], null,$ipAsker)
-                                                    ->then(function ($resultIps) use ($data, &$_CACHE, &$_TORESEND,$timerOutConnectivity) {
+                                                    ->then(
+                                                        function ($resultIps) use ($data, &$_CACHE, &$_TORESEND,$timerOutConnectivity) {
 
                                                         $this->loop->cancelTimer($timerOutConnectivity);
 
@@ -797,7 +799,18 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                         $_CACHE[$data['infos']['domain']]['timerConnectivity']['timer'] = $this->loop->addPeriodicTimer(5, fn() => $this->testIpConnectivity($data['infos']['domain'], $_CACHE[$data['infos']['domain']]['timerConnectivity']['id'],null));
 //
 
-                                                    });
+                                                    })
+                                                    ->catch(function (Exception $e) use (&$_TORESOLVE,$data, $domain) {
+                                                        echo "Error testing IP connectivity for domain: " . $domain . " - " . $e->getMessage() . PHP_EOL;
+                                                        // Reject the deferred with the error
+                                                        $_TORESOLVE[$domain] = $data ;
+//                                                        if (isset($_TORESOLVE[$domain]['infos']['deferred'])) {
+//                                                            $_TORESOLVE[$domain]['infos']['deferred']->reject($e);
+//                                                        }
+//                                                        unset($_TORESOLVE[$domain]) ;
+                                                            })
+                                                ;
+
 
 
                                             }
