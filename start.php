@@ -807,6 +807,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                         echo "Error testing IP connectivity for domain: " . $domain . " - " . $e->getMessage() . PHP_EOL;
                                                         // Reject the deferred with the error
                                                         $_TORESOLVE[$domain] = $data ;
+                                                        $this->loop->addTimer(0.1, fn() => $this->server->resolveDocker());
+                                                        
 //                                                        if (isset($_TORESOLVE[$domain]['infos']['deferred'])) {
 //                                                            $_TORESOLVE[$domain]['infos']['deferred']->reject($e);
 //                                                        }
