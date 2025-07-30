@@ -685,8 +685,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         foreach ($services as $service) {
                             if ($service['Spec']['Name'] == $serviceName) {
 
-
-                                $client->taskList(['service' => $service['ID']])->then(function (array $tasks) use (&$_TORESOLVE,$service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$domain) {
+                                $client->taskList(['service' => [ $service['ID'] => true ] ])->then(function (array $tasks) use (&$_TORESOLVE,$service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$domain) {
                                     echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
                                     echo "COUUUUUUUNT TASK : " . count($tasks) . PHP_EOL;
