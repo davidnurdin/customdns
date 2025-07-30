@@ -710,39 +710,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                            // TODO : ne connect que si le current node est bien le meme !
                                             foreach ($service['Endpoint']['VirtualIPs'] as $network)
                                             {
-
-
                                                 // $network['NetworkID']
                                                 $process = new Process('/usr/local/bin/php /app/addNetwork.php ' . escapeshellarg($network['NetworkID']) . " " . escapeshellarg($GLOBALS['DNS-HELPER-NAME']) );
                                                 $process->start();
-
-
-
-                                                /*
-                                                 *
-                                                 * Ne fonctionne pas en mode swarm , il faut update le service dns helper (ou qu'il soit pret a la creation du service customdns)
-                                                $client->networkInspect($network['NetworkID'])->then(function (array $networkInspectInfo) use ($client, $service, $serviceName, $data, &$_CACHE, &$_TORESEND, $task,$network,$resolverClientContainerId,$dnsHelperContainerId) {
-
-                                                    if (!isset($_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']])) {
-
-                                                        // On place Dns Helper dans le réseau (ceci est appelé sur les 3 node , normal d'avoir des not found)
-                                                        echo "Network: " . $network['NetworkID'] . PHP_EOL;
-                                                        echo "Addr:" . $network['Addr'] . PHP_EOL;
-                                                        echo "Try to connect to network: " . $network['NetworkID'] . " On container : " . $dnsHelperContainerId . PHP_EOL;
-                                                        // ASK DNS HELPER to join NETWORK
-                                                        $client->networkConnect($network['NetworkID'], $dnsHelperContainerId)->then(function () use ($service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                                                            echo "Connected to network: " . $service['Spec']['Name'] . PHP_EOL;
-                                                        })->otherwise(function (Exception $e) {
-                                                            echo 'Error connecting to network: ' . $e->getMessage() . PHP_EOL;
-                                                        });
-
-                                                        $_CACHE[$data['infos']['domain']]['networks'][$network['NetworkID']] = $network['Addr'];
-                                                    }
-
-
-                                                });
-                                                */
-
                                             }
 
 
@@ -750,6 +720,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                             foreach ($taskDetails['NetworksAttachments'] as $netWork) {
                                                 $ipRange = $netWork['Addresses'];
                                                 $ip = explode('/', $ipRange[0])[0]; // Get the IP address part before the slash
+
+                                                var_dump('ADDDDDDDDD : ==> ' . $ip . ' ===> NETWORK ASKER : ' . $ipAsker);
+
                                                 $_CACHE[$data['infos']['domain']]['ips'][] = ['ip' => $ip];
                                             }
 
