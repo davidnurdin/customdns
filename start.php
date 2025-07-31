@@ -732,7 +732,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                                 $ip = explode('/', $ipRange[0])[0]; // Get the IP address part before the slash
 
                                                 // Add only if in same range of the asker
-                                                if ($this->resolver->isSameRange($ip,$ipAsker,$ipRange)) // TODO voir si ca pose pb ou non ?
+                                                //if ($this->resolver->isSameRange($ip,$ipAsker,$ipRange)) // TODO voir si ca pose pb ou non ? << ca pose pb en cas de multiple network !
                                                 {
                                                     if ($ip !== $ipAsker) {
                                                         var_dump('ADDDDDDDDD : ==> ' . $ip . ' ===> NETWORK ASKER : ' . $ipAsker);
