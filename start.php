@@ -143,20 +143,23 @@ class myResolver implements ResolverInterface
 
                         $client = explode(':', $client)[0] ?? null; // get the client IP without port
                         // get the real ip
-                        $realIp = $_CACHE[$domain]['ipNat'][$client] ;
+                        if (isset($_CACHE[$domain]['ipNat'][$client])) {
+                            $realIp = $_CACHE[$domain]['ipNat'][$client];
 
-                        // send only IP on same network of the client
-                         if ($this->isSameRange($ip['ip'],$realIp, $_CACHE[$domain]['networks'] ?? [])) {
-                             if ($ip['canBeJoin']) {
-                                 $answers[] = (new ResourceRecord())
-                                     ->setQuestion(false)
-                                     ->setTtl( ($GLOBALS['clearTimeoutSec'] - (time() - $GLOBALS['lastEmpty'])) + 1 )
-                                     ->setType(RecordTypeEnum::TYPE_A)
-                                     ->setName($domainAsked . '.')
-                                     ->setRdata($ip['ip']);
-                             }
+                            // send only IP on same network of the client
+                            if ($this->isSameRange($ip['ip'], $realIp, $_CACHE[$domain]['networks'] ?? [])) {
+                                if ($ip['canBeJoin']) {
+                                    $answers[] = (new ResourceRecord())
+                                        ->setQuestion(false)
+                                        ->setTtl(($GLOBALS['clearTimeoutSec'] - (time() - $GLOBALS['lastEmpty'])) + 1)
+                                        ->setType(RecordTypeEnum::TYPE_A)
+                                        ->setName($domainAsked . '.')
+                                        ->setRdata($ip['ip']);
+                                }
 
-                         }
+                            }
+
+                        }
 
 
                     }
@@ -285,6 +288,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         global $_CACHE;
         // Empty the cache every 20 seconds
         foreach ($_CACHE as $domain => $data) {
+
+            if (isset($_CACHE[$domain]['active']) && $_CACHE[$domain]['active'] === false) {
+                echo "Domain $domain is inactive, skipping." . PHP_EOL;
+                continue;
+            }
+
             if (isset($data['timerConnectivity']['timer'])) {
                 $this->loop->cancelTimer($data['timerConnectivity']['timer']);
                 unset($_CACHE[$domain]['timerConnectivity']);
@@ -332,7 +341,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 }
                 unset($_TORESEND[$domain]);
             } else {
-                echo "TRACE1\n";
+                 echo "TRACE1\n";
+                // Resolve again
             }
 
         }
