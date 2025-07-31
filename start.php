@@ -350,6 +350,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                      $_CACHE[$domain]['retry']++;
 
+                     echo "Retry for domain $domain, attempt " . $_CACHE[$domain]['retry'] . PHP_EOL;
+
                      if ($_CACHE[$domain]['retry'] > 10)
                      {
                          echo "Domain $domain has been retried too many times, removing from cache." . PHP_EOL;
