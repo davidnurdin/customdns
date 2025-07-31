@@ -341,7 +341,22 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 }
                 unset($_TORESEND[$domain]);
             } else {
+
                  echo "TRACE1\n";
+                 if (isset($_CACHE[$domain]))
+                 {
+                     if (!isset($_CACHE[$domain]['retry']))
+                            $_CACHE[$domain]['retry'] = 0;
+
+                     $_CACHE[$domain]['retry']++;
+
+                     if ($_CACHE[$domain]['retry'] > 10)
+                     {
+                         echo "Domain $domain has been retried too many times, removing from cache." . PHP_EOL;
+                         unset($_CACHE[$domain]);
+                         unset($_TORESEND[$domain]);
+                     }
+                 }
                 // Resolve again
             }
 
