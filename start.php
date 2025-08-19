@@ -141,7 +141,32 @@ class myResolver implements ResolverInterface
                 if ($_CACHE[$domain]['active']) {
                     foreach ($_CACHE[$domain]['ipsActive'] as $ip) {
 
+                        $originalClient = $client ;
                         $client = explode(':', $client)[0] ?? null; // get the client IP without port
+
+                        // 19/08/2025 bug liste qui se vide
+                        if (!isset($_CACHE[$domain]['ipNat'][$client]))
+                        {
+
+                            $data = [
+                                'infos' => [
+                                    'client' => $originalClient,
+                                    'domain' => $domain
+                                ]
+                            ] ;
+
+                            $this->server->getRequesterAsync($domain,$data)->then(function ($infos) use (&$_CACHE,$domain,$data,$originalClient) {
+                                [$resolverClientContainerId, $ipAsker] = $infos;
+                                echo "=======2||||||||||||||||||||||||||||========== " .  $ipAsker . " on the container : " . $resolverClientContainerId . " has ask for service : " . $domain . PHP_EOL;
+                                $ipClient = explode(':', $data['infos']['client'])[0] ?? null; // get the client IP without port
+                                $_CACHE[$domain]['ipNat'][$ipClient] = $ipAsker; // store the IP of the container on the same network
+
+                            });
+
+                            // Si pas de nat, on utilise l'ip du client
+                            // $_CACHE[$domain]['ipNat'][$client] = $client;
+                        }
+
                         // get the real ip
                         if (isset($_CACHE[$domain]['ipNat'][$client])) {
                             $realIp = $_CACHE[$domain]['ipNat'][$client];
