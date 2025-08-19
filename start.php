@@ -3,22 +3,22 @@
 declare(strict_types=1);
 
 if (!isset($argv[3]))
-    $argv[3] = 60 * 3  ; // On vide le cache tt les 3 min
+    $argv[3] = 60 * 3; // On vide le cache tt les 3 min
 
 if (!isset($argv[4]))
-    $argv[4] = 1  ;
+    $argv[4] = 1;
 
 if (!isset($argv[5]))
-    $argv[5] = 'dns_dns-helper'  ;
+    $argv[5] = 'dns_dns-helper';
 
 
-$GLOBALS['clearTimeoutSec'] = $argv[3] ; // 60 * 5 ;
+$GLOBALS['clearTimeoutSec'] = $argv[3]; // 60 * 5 ;
 
-$GLOBALS['instance'] = $argv[4] ;
-$GLOBALS['kill1After'] = 60*6 ;
-$GLOBALS['kill2After'] = 60*8 ;
-$GLOBALS['kill3After'] = 60*10 ;
-$GLOBALS['DNS-HELPER-NAME'] = $argv[5] ; // 'dns-helper' ; WIP todo
+$GLOBALS['instance'] = $argv[4];
+$GLOBALS['kill1After'] = 60 * 6;
+$GLOBALS['kill2After'] = 60 * 8;
+$GLOBALS['kill3After'] = 60 * 10;
+$GLOBALS['DNS-HELPER-NAME'] = $argv[5]; // 'dns-helper' ; WIP todo
 
 use CatFerq\ReactPHPDNS\Entities\Header;
 use CatFerq\ReactPHPDNS\Entities\ResourceRecord;
@@ -141,25 +141,26 @@ class myResolver implements ResolverInterface
                 if ($_CACHE[$domain]['active']) {
                     foreach ($_CACHE[$domain]['ipsActive'] as $ip) {
 
-                        $originalClient = $client ;
+                        $originalClient = $client;
                         $client = explode(':', $client)[0] ?? null; // get the client IP without port
 
                         // 19/08/2025 bug liste qui se vide
-                        if (!isset($_CACHE[$domain]['ipNat'][$client]))
-                        {
+                        if (!isset($_CACHE[$domain]['ipNat'][$client])) {
 
                             $data = [
                                 'infos' => [
                                     'client' => $originalClient,
                                     'domain' => $domain
                                 ]
-                            ] ;
+                            ];
 
-                            $this->server->getRequesterAsync($domain,$data)->then(function ($infos) use (&$_CACHE,$domain,$data,$originalClient) {
-                                [$resolverClientContainerId, $ipAsker] = $infos;
-                                echo "=======2||||||||||||||||||||||||||||========== " .  $ipAsker . " on the container : " . $resolverClientContainerId . " has ask for service : " . $domain . PHP_EOL;
-                                $ipClient = explode(':', $data['infos']['client'])[0] ?? null; // get the client IP without port
-                                $_CACHE[$domain]['ipNat'][$ipClient] = $ipAsker; // store the IP of the container on the same network
+                            $this->server->getRequesterAsync($domain, $data)->then(function ($infos) use (&$_CACHE, $domain, $data, $originalClient) {
+                                if ($infos) {
+                                    [$resolverClientContainerId, $ipAsker] = $infos;
+                                    echo "=======2||||||||||||||||||||||||||||========== " . $ipAsker . " on the container : " . $resolverClientContainerId . " has ask for service : " . $domain . PHP_EOL;
+                                    $ipClient = explode(':', $data['infos']['client'])[0] ?? null; // get the client IP without port
+                                    $_CACHE[$domain]['ipNat'][$ipClient] = $ipAsker; // store the IP of the container on the same network
+                                }
 
                             });
 
@@ -272,7 +273,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             $ip = $_SERVER['argv'][1];
 
         if (isset($_SERVER['argv'][2]))
-            $port = ((int) $_SERVER['argv'][2]);
+            $port = ((int)$_SERVER['argv'][2]);
 
         $context = stream_context_create(array(
             'socket' => array(
@@ -293,7 +294,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         $this->loop->addPeriodicTimer(1, fn() => $this->retryResend());
 
-        $this->emptyCache() ;
+        $this->emptyCache();
 
         echo date('Y/m/d H:i:s') . " => Process will be kill in : " . $GLOBALS['kill' . $GLOBALS['instance'] . 'After'] . " seconds." . PHP_EOL;
 
@@ -308,7 +309,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
     public function emptyCache()
     {
-     //   return; // TODO : voir
+        //   return; // TODO : voir
 
         global $_CACHE;
         // Empty the cache every 20 seconds
@@ -367,42 +368,40 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 unset($_TORESEND[$domain]);
             } else {
 
-                 echo "TRACE1\n";
-                 if (isset($_CACHE[$domain]))
-                 {
-                     if (!isset($_CACHE[$domain]['retry']))
-                            $_CACHE[$domain]['retry'] = 0;
+                echo "TRACE1\n";
+                if (isset($_CACHE[$domain])) {
+                    if (!isset($_CACHE[$domain]['retry']))
+                        $_CACHE[$domain]['retry'] = 0;
 
-                     $_CACHE[$domain]['retry']++;
+                    $_CACHE[$domain]['retry']++;
 
-                     echo "Retry for domain $domain, attempt " . $_CACHE[$domain]['retry'] . PHP_EOL;
+                    echo "Retry for domain $domain, attempt " . $_CACHE[$domain]['retry'] . PHP_EOL;
 
-                     if ($_CACHE[$domain]['retry'] > 10)
-                     {
-                         echo "Domain $domain has been retried too many times, removing from cache." . PHP_EOL;
-                         unset($_CACHE[$domain]);
-                         unset($_TORESEND[$domain]);
-                     }
-                 }
+                    if ($_CACHE[$domain]['retry'] > 10) {
+                        echo "Domain $domain has been retried too many times, removing from cache." . PHP_EOL;
+                        unset($_CACHE[$domain]);
+                        unset($_TORESEND[$domain]);
+                    }
+                }
                 // Resolve again
             }
 
         }
     }
 
-    public function createTimeout(int $time, LoopInterface $loop, $deferred, $message,$idTimer)
+    public function createTimeout(int $time, LoopInterface $loop, $deferred, $message, $idTimer)
     {
         // 1er timer
         echo "Timeout on : " . $message . " after " . $time . " seconds." . PHP_EOL;
-        $timer = $loop->addTimer($time, function () use ($deferred, $message, $time,$idTimer) {
+        $timer = $loop->addTimer($time, function () use ($deferred, $message, $time, $idTimer) {
             echo "Timeout is CATCH on " . $message . " after " . $time . " seconds." . PHP_EOL;
-            $this->rejectOrResolveFalse("Timeout : " . $message,$idTimer, $deferred);
+            $this->rejectOrResolveFalse("Timeout : " . $message, $idTimer, $deferred);
         });
 
         return $timer;
     }
 
-    public function dataFromProxy($chunk,$loop,$proxy,$deferred,$timer = null,$idTimer = null)
+    public function dataFromProxy($chunk, $loop, $proxy, $deferred, $timer = null, $idTimer = null)
     {
         var_dump('(2) SIZE DATA : ' . strlen($chunk) . ' DATA : ' . bin2hex($chunk));
         // echo $chunk;
@@ -416,12 +415,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             $deferred->resolve(true);
         } else {
             echo "Data received is too short, connection might not be good.\n";
-            $this->rejectOrResolveFalse("Data too short",$idTimer, $deferred);
+            $this->rejectOrResolveFalse("Data too short", $idTimer, $deferred);
         }
     }
 
 
-    public function rejectOrResolveFalse($message,$idTimer,$deferred)
+    public function rejectOrResolveFalse($message, $idTimer, $deferred)
     {
         if ($idTimer === null)
             $deferred->reject(new \Exception($message));
@@ -430,7 +429,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
     }
 
-    public function testIpConnectivity($domain, ?string $idTimer,?string $ipAsker)
+    public function testIpConnectivity($domain, ?string $idTimer, ?string $ipAsker)
     {
         global $_CACHE;
 
@@ -440,16 +439,16 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $promises = [];
 
 
-        $ipsFiltered = array_filter($_CACHE[$domain]['ips'] ?? [], function ($ip) use ($domain,$ipAsker,&$_CACHE) {
+        $ipsFiltered = array_filter($_CACHE[$domain]['ips'] ?? [], function ($ip) use ($domain, $ipAsker, &$_CACHE) {
             if (!$ipAsker)
-                return true ;
-            $result = $this->resolver->isSameRange($ip['ip'],$ipAsker, $_CACHE[$domain]['networks'] ?? []);
+                return true;
+            $result = $this->resolver->isSameRange($ip['ip'], $ipAsker, $_CACHE[$domain]['networks'] ?? []);
 
 //            var_dump($ip['ip']);
 //            var_dump($ipAsker);
 //            var_dump($_CACHE[$domain]['networks'] ?? []);
 //            var_dump($result);
-            return $result ;
+            return $result;
 
         });
 
@@ -459,7 +458,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         foreach ($ipsFiltered as $ip) {
             $promises[] = \React\Promise\resolve($ip['canBeJoin'] ?? null)
-                ->then(function ($canBeJoin) use ($ip, $domain,$idTimer) {
+                ->then(function ($canBeJoin) use ($ip, $domain, $idTimer) {
 
                     echo "Check connectivity for IP: " . $ip['ip'] . " in domain: " . $domain . ' actuel is ' . var_export($canBeJoin, true) . PHP_EOL;
 
@@ -477,7 +476,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                     $timer1 = $this->createTimeout(2, $loop, $deferred, "Connection(1) to {$ip['ip']}:3306", $idTimer);
                     $unixSocketPath = '/var/run/dns-helper/helper.sock';
-                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop, $deferred, $ip, $timer1,$idTimer) {
+                    $connector->connect("unix://$unixSocketPath")->then(function (React\Socket\ConnectionInterface $proxy) use ($loop, $deferred, $ip, $timer1, $idTimer) {
                         echo "Connecté à la socket Unix SOCKS5\n";
                         $loop->cancelTimer($timer1);
 
@@ -493,14 +492,14 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                        });
 
 
-                        $proxy->once('data', function ($data) use ($proxy, $deferred, $ip, $timer2, $loop,$idTimer) {
+                        $proxy->once('data', function ($data) use ($proxy, $deferred, $ip, $timer2, $loop, $idTimer) {
                             $loop->cancelTimer($timer2);
                             if ($data !== "\x05\x00") {
                                 $proxy->close();
                                 echo "Proxy SOCKS5 : méthode non supportée ou erreur\n";
                                 echo "Connection(2) to {$ip['ip']}:3306 not support." . PHP_EOL;
 
-                                $this->rejectOrResolveFalse("Timeout(2)",$idTimer, $deferred);
+                                $this->rejectOrResolveFalse("Timeout(2)", $idTimer, $deferred);
                                 return;
                             }
 
@@ -525,7 +524,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                echo "\n(3) Connexion fermée\n";
 //                            });
 
-                            $proxy->once('data', function ($data) use ($proxy, $addr, $port, $deferred, $ip, $timer3, $loop,$idTimer) {
+                            $proxy->once('data', function ($data) use ($proxy, $addr, $port, $deferred, $ip, $timer3, $loop, $idTimer) {
                                 $loop->cancelTimer($timer3);
                                 var_dump('(1) SIZE DATA : ' . strlen($data) . ' DATA : ' . bin2hex($data));
 
@@ -534,7 +533,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                     echo "[ERR] => Réponse du proxy SOCKS5 : " . $hex . "\n";
                                     echo "Connexion refusée ou erreur SOCKS5\n";
                                     echo "Connection(3) to {$ip['ip']}:3306 connexion refuse." . PHP_EOL;
-                                    $this->rejectOrResolveFalse("Timeout(3)",$idTimer, $deferred);
+                                    $this->rejectOrResolveFalse("Timeout(3)", $idTimer, $deferred);
                                     $proxy->close();
                                     return;
                                 }
@@ -542,7 +541,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                                 if (strlen($data) > 10) {
                                     // restant de la requete
                                     $remainingData = substr($data, 10);
-                                    $this->dataFromProxy($remainingData,$loop,$proxy,$deferred,null,$idTimer) ;
+                                    $this->dataFromProxy($remainingData, $loop, $proxy, $deferred, null, $idTimer);
 
                                 }
                                 echo "Connexion à " . $addr . ":" . $port . " établie via SOCKS5\n";
@@ -552,7 +551,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                $proxy->write($httpRequest);
 
                                 $timer4 = $this->createTimeout(2, $loop, $deferred, "Connection(4) to {$ip['ip']}:3306", $idTimer);
-                                $proxy->on('data', fn($chunk) => $this->dataFromProxy($chunk,$loop,$proxy,$deferred,$timer4,$idTimer));
+                                $proxy->on('data', fn($chunk) => $this->dataFromProxy($chunk, $loop, $proxy, $deferred, $timer4, $idTimer));
 
                                 // soit on recois des data , soit on a un timeout
                                 // TODO : voir comment gerer les close ?! (peut on faire un deferred = true, puis un false ?) (ou testé si le deferred a été triggered)
@@ -565,7 +564,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                         });
                     }, function (Exception $e) use ($deferred) {
                         // defered false
-                        $this->rejectOrResolveFalse("Timeout(E4)",null, $deferred);
+                        $this->rejectOrResolveFalse("Timeout(E4)", null, $deferred);
                         echo "|||||||||||||| Échec de connexion à la socket Unix : " . $e->getMessage() . "\n";
                     });
 
@@ -585,8 +584,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         echo "END FOREACH\n";
 
-        if ($idTimer === null)
-        {
+        if ($idTimer === null) {
             $result = \React\Promise\any($promises)->then(function ($results) use ($domain, &$_CACHE) {
 
 //                var_dump($results);
@@ -595,13 +593,12 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 echo "=>>>>>>>>>>>>>>> NOWWWW (one OK) WRITE ips TO domain : " . $domain . " count ( " . count($results) . " \n";
                 var_dump($results);
 
-                $_CACHE[$domain]['ipsActive'] = [ $results ];
+                $_CACHE[$domain]['ipsActive'] = [$results];
                 return $results;
             });
-        }
-        else {
+        } else {
 
-            echo "::::::::::::::::::::::::::::::::::::::::::::::::::: =========> ALL" ;
+            echo "::::::::::::::::::::::::::::::::::::::::::::::::::: =========> ALL";
 
             $result = \React\Promise\all($promises)->then(function ($results) use ($domain, &$_CACHE) {
                 // TODO : voir si y'a pas des timer en concurrence ?
@@ -651,27 +648,24 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         */
     }
-    public function getRequesterAsync($serviceName,$data)
+
+    public function getRequesterAsync($serviceName, $data)
     {
         $deferredRequester = new Deferred();
         $clientGwInspect = new Clue\React\Docker\Client();
         $clientGwInspect->networkInspect('docker_gwbridge')->then(
-            function (array $network) use ($clientGwInspect, $serviceName, $data, &$_CACHE, &$_TORESEND,$deferredRequester) {
+            function (array $network) use ($clientGwInspect, $serviceName, $data, &$_CACHE, &$_TORESEND, $deferredRequester) {
                 // Check if the network is active
-                foreach ( $network['Containers'] as $containerName => $containerInfos)
-                {
+                foreach ($network['Containers'] as $containerName => $containerInfos) {
                     // search the client source in this list with same IPV4
-                    if (explode('/',$containerInfos['IPv4Address'])[0] == explode(':',$data['infos']['client'])[0]) {
+                    if (explode('/', $containerInfos['IPv4Address'])[0] == explode(':', $data['infos']['client'])[0]) {
                         echo "Found client in docker_gwbridge network: " . $containerName . PHP_EOL; // container web
 
                         // search NetworkSettings of this container
                         $clientGwInspect->containerInspect($containerName)->then(
-                            function (array $containerInfo) use ($clientGwInspect,$containerName,$deferredRequester)
-                            {
-                                foreach ( $containerInfo['NetworkSettings']['Networks'] as $networkName => $networkInfo)
-                                {
-                                    if ($networkName !== 'ingress')
-                                    {
+                            function (array $containerInfo) use ($clientGwInspect, $containerName, $deferredRequester) {
+                                foreach ($containerInfo['NetworkSettings']['Networks'] as $networkName => $networkInfo) {
+                                    if ($networkName !== 'ingress') {
                                         echo "Found network: " . $networkName . " for container: " . $networkName . PHP_EOL;
 
                                         $clientGwInspect->networkInspect($networkName)->then(
@@ -680,12 +674,15 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
                                                 // Get the IP address of the container in this network
                                                 $containerIp = $networkInspectInfo['Containers'][$containerName]['IPv4Address'] ?? null;
-                                                $containerIp = explode('/',$containerIp)[0];
-                                                $deferredRequester->resolve([$containerName, $containerIp]);
+                                                if ($containerIp) {
+                                                    $containerIp = explode('/', $containerIp)[0];
+                                                    $deferredRequester->resolve([$containerName, $containerIp]);
+                                                } else
+                                                    $deferredRequester->resolve(null);
 
 
-                                        // TODO : inspect this network , find container in "containers" and get real ip !
-                                    });
+                                                // TODO : inspect this network , find container in "containers" and get real ip !
+                                            });
                                     } else {
                                         echo "Skipping ingress network for container: " . $containerName . PHP_EOL;
                                     }
@@ -710,8 +707,9 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             }
         );
 
-        return $deferredRequester->promise() ;
+        return $deferredRequester->promise();
     }
+
     public function resolveDocker()
     {
         global $_TORESOLVE, $_CACHE, $_TORESEND;
@@ -725,126 +723,125 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
                 $_CACHE[$data['infos']['domain']]['ipsActive'] = [];
                 $_CACHE[$data['infos']['domain']]['active'] = false;
 
-                $this->getRequesterAsync($serviceName,$data)->then(function ($infos) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
-                    [$resolverClientContainerId,$ipAsker] = $infos ;
+                $this->getRequesterAsync($serviceName, $data)->then(function ($infos) use (&$_TORESOLVE, $domain, $serviceName, $data, &$_CACHE, &$_TORESEND) {
+                    if ($infos) {
+                        [$resolverClientContainerId, $ipAsker] = $infos;
 
-                    echo "=======||||||||||||||||||||||||||||========== " .  $ipAsker . " on the container : " . $resolverClientContainerId . " has ask for service : " . $serviceName . PHP_EOL;
-                    $ipClient = explode(':', $data['infos']['client'])[0] ?? null; // get the client IP without port
-                    $_CACHE[$data['infos']['domain']]['ipNat'][$ipClient] = $ipAsker; // store the IP of the container on the same network
+                        echo "=======||||||||||||||||||||||||||||========== " . $ipAsker . " on the container : " . $resolverClientContainerId . " has ask for service : " . $serviceName . PHP_EOL;
+                        $ipClient = explode(':', $data['infos']['client'])[0] ?? null; // get the client IP without port
+                        $_CACHE[$data['infos']['domain']]['ipNat'][$ipClient] = $ipAsker; // store the IP of the container on the same network
 
-                    $client = new Clue\React\Docker\Client();
-                    $client->serviceList()->then(function (array $services) use (&$_TORESOLVE,$client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$domain) {
-                        foreach ($services as $service) {
-                            if ($service['Spec']['Name'] == $serviceName) {
+                        $client = new Clue\React\Docker\Client();
+                        $client->serviceList()->then(function (array $services) use (&$_TORESOLVE, $client, $serviceName, $data, &$_CACHE, &$_TORESEND, $resolverClientContainerId, $ipAsker, $domain) {
+                            foreach ($services as $service) {
+                                if ($service['Spec']['Name'] == $serviceName) {
 
-                                $client->taskList(['service' => [ $service['ID'] => true ] ])->then(function (array $tasks) use (&$_TORESOLVE,$service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND,$resolverClientContainerId,$ipAsker,$domain) {
-                                    echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
+                                    $client->taskList(['service' => [$service['ID'] => true]])->then(function (array $tasks) use (&$_TORESOLVE, $service, $client, $serviceName, $data, &$_CACHE, &$_TORESEND, $resolverClientContainerId, $ipAsker, $domain) {
+                                        echo "Service: " . $service['Spec']['Name'] . PHP_EOL;
 
-                                    echo "COUUUUUUUNT TASK : " . count($tasks) . PHP_EOL;
+                                        echo "COUUUUUUUNT TASK : " . count($tasks) . PHP_EOL;
 
-                                    // filter task get only Running AND have Addresses
-                                    $tasks = array_filter($tasks, function ($task) {
-                                        return $task['Status']['State'] == 'running' && isset($task['NetworksAttachments'][0]['Addresses']);
-                                    });
+                                        // filter task get only Running AND have Addresses
+                                        $tasks = array_filter($tasks, function ($task) {
+                                            return $task['Status']['State'] == 'running' && isset($task['NetworksAttachments'][0]['Addresses']);
+                                        });
 
-                                    echo "COUUUUUUUNT TASK2 : " . count($tasks) . PHP_EOL;
-
-
-
-                                    // var_dump($data['infos']['client']);die();
-
-                                    $_CACHE[$data['infos']['domain']]['nbTasksToResolve'] = count($tasks);
-                                    $_CACHE[$data['infos']['domain']]['nbTasksResolved'] = 0;
-                                    $_CACHE[$data['infos']['domain']]['networks'] = [];
-
-                                    foreach ($tasks as $task) {
-
-                                        echo "Status: " . $task['Status']['State'] . PHP_EOL;
-                                        echo "Node: " . $task['NodeID'] . PHP_EOL;
-                                        echo PHP_EOL;
+                                        echo "COUUUUUUUNT TASK2 : " . count($tasks) . PHP_EOL;
 
 
-                                        $client->taskInspect($task['ID'])->then(function (array $taskDetails) use (&$_TORESOLVE,$service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName,$resolverClientContainerId,$ipAsker,$domain) {
-                                            var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
+                                        // var_dump($data['infos']['client']);die();
+
+                                        $_CACHE[$data['infos']['domain']]['nbTasksToResolve'] = count($tasks);
+                                        $_CACHE[$data['infos']['domain']]['nbTasksResolved'] = 0;
+                                        $_CACHE[$data['infos']['domain']]['networks'] = [];
+
+                                        foreach ($tasks as $task) {
+
+                                            echo "Status: " . $task['Status']['State'] . PHP_EOL;
+                                            echo "Node: " . $task['NodeID'] . PHP_EOL;
+                                            echo PHP_EOL;
+
+
+                                            $client->taskInspect($task['ID'])->then(function (array $taskDetails) use (&$_TORESOLVE, $service, $data, &$_CACHE, &$_TORESEND, $client, $task, $serviceName, $resolverClientContainerId, $ipAsker, $domain) {
+                                                var_dump('TASK : ' . $taskDetails['ID'] . PHP_EOL);
 
 
 //                                            // get the networks and connect to it : todo : exclude ingress?
 //                                            // TODO : ne connect que si le current node est bien le meme !
-                                            foreach ($service['Endpoint']['VirtualIPs'] as $network)
-                                            {
-                                                // $network['NetworkID']
-                                                $process = new Process('/usr/local/bin/php /app/addNetwork.php ' . escapeshellarg($network['NetworkID']) . " " . escapeshellarg($GLOBALS['DNS-HELPER-NAME']) );
-                                                $process->start();
-                                            }
+                                                foreach ($service['Endpoint']['VirtualIPs'] as $network) {
+                                                    // $network['NetworkID']
+                                                    $process = new Process('/usr/local/bin/php /app/addNetwork.php ' . escapeshellarg($network['NetworkID']) . " " . escapeshellarg($GLOBALS['DNS-HELPER-NAME']));
+                                                    $process->start();
+                                                }
 
 
-                                            $_CACHE[$data['infos']['domain']]['nbTasksResolved']++;
-                                            foreach ($taskDetails['NetworksAttachments'] as $netWork) {
-                                                $ipRange = $netWork['Addresses'];
-                                                $ip = explode('/', $ipRange[0])[0]; // Get the IP address part before the slash
+                                                $_CACHE[$data['infos']['domain']]['nbTasksResolved']++;
+                                                foreach ($taskDetails['NetworksAttachments'] as $netWork) {
+                                                    $ipRange = $netWork['Addresses'];
+                                                    $ip = explode('/', $ipRange[0])[0]; // Get the IP address part before the slash
 
-                                                // Add only if in same range of the asker
-                                                //if ($this->resolver->isSameRange($ip,$ipAsker,$ipRange)) // TODO voir si ca pose pb ou non ? << ca pose pb en cas de multiple network !
-                                                {
-                                                    if ($ip !== $ipAsker) {
-                                                        var_dump('ADDDDDDDDD : ==> ' . $ip . ' ===> NETWORK ASKER : ' . $ipAsker);
-                                                        $_CACHE[$data['infos']['domain']]['ips'][] = ['ip' => $ip];
+                                                    // Add only if in same range of the asker
+                                                    //if ($this->resolver->isSameRange($ip,$ipAsker,$ipRange)) // TODO voir si ca pose pb ou non ? << ca pose pb en cas de multiple network !
+                                                    {
+                                                        if ($ip !== $ipAsker) {
+                                                            var_dump('ADDDDDDDDD : ==> ' . $ip . ' ===> NETWORK ASKER : ' . $ipAsker);
+                                                            $_CACHE[$data['infos']['domain']]['ips'][] = ['ip' => $ip];
+                                                        }
+
+                                                    }
+                                                }
+
+
+                                                if ($_CACHE[$data['infos']['domain']]['nbTasksResolved'] == $_CACHE[$data['infos']['domain']]['nbTasksToResolve']) {
+                                                    echo "All tasks resolved for service: " . $service['Spec']['Name'] . PHP_EOL;
+
+                                                    foreach ($_CACHE[$data['infos']['domain']]['ips'] as $displayIp) {
+                                                        echo "IPs: " . $displayIp['ip'] . PHP_EOL;
                                                     }
 
-                                                }
-                                            }
+
+                                                    // met a jour l'ip du demandeur (par défaut il utilise l'ip 172.xxx)
+                                                    //$data['infos']['client']
+
+                                                    $timerOutConnectivity = $this->loop->addTimer(5, function () use (&$_TORESOLVE, $data, $domain) {
+                                                        // no testIpConnectivity ... we relaunch
+                                                        echo "||||||||__________________|||||||||||||" . "RELAUNCH TEST IP CONNECTIVITY FOR DOMAIN : " . $domain . PHP_EOL;
+                                                        $_TORESOLVE[$domain] = $data;
+                                                        $this->loop->addTimer(0.1, fn() => $this->resolveDocker());
+                                                    });
+
+                                                    $this->testIpConnectivity($data['infos']['domain'], null, $ipAsker)
+                                                        ->then(
+                                                            function ($resultIps) use ($data, &$_CACHE, &$_TORESEND, $timerOutConnectivity) {
+
+                                                                $this->loop->cancelTimer($timerOutConnectivity);
+
+                                                                // Update the cache with the connectivity results
+                                                                echo "=========+> SET ACTIVE DOMAIN : " . $data['infos']['domain'] . PHP_EOL;
+
+                                                                $_CACHE[$data['infos']['domain']]['active'] = true;
 
 
-                                            if ($_CACHE[$data['infos']['domain']]['nbTasksResolved'] == $_CACHE[$data['infos']['domain']]['nbTasksToResolve']) {
-                                                echo "All tasks resolved for service: " . $service['Spec']['Name'] . PHP_EOL;
+                                                                if (!isset($_TORESEND[$data['infos']['domain']]))
+                                                                    $_TORESEND[$data['infos']['domain']] = [];
 
-                                                foreach ($_CACHE[$data['infos']['domain']]['ips'] as $displayIp) {
-                                                    echo "IPs: " . $displayIp['ip'] . PHP_EOL;
-                                                }
+                                                                $_TORESEND[$data['infos']['domain']][] = [
+                                                                    'deferred' => $data['infos']['deferred'],
+                                                                    'client' => $data['infos']['client'],
+                                                                    'queries' => $data['infos']['queries'],
+                                                                    'server' => $data['infos']['server'],
+                                                                    'domainAsked' => $data['infos']['domainAsked'],
+                                                                    'domain' => $data['infos']['domain']
+                                                                ];
 
-
-                                                // met a jour l'ip du demandeur (par défaut il utilise l'ip 172.xxx)
-                                                //$data['infos']['client']
-
-                                                $timerOutConnectivity = $this->loop->addTimer(5,function() use (&$_TORESOLVE,$data,$domain) {
-                                                    // no testIpConnectivity ... we relaunch
-                                                    echo "||||||||__________________|||||||||||||" . "RELAUNCH TEST IP CONNECTIVITY FOR DOMAIN : " . $domain . PHP_EOL;
-                                                    $_TORESOLVE[$domain] = $data ;
-                                                    $this->loop->addTimer(0.1, fn() => $this->resolveDocker());
-                                                }) ;
-
-                                                $this->testIpConnectivity($data['infos']['domain'], null,$ipAsker)
-                                                    ->then(
-                                                        function ($resultIps) use ($data, &$_CACHE, &$_TORESEND,$timerOutConnectivity) {
-
-                                                        $this->loop->cancelTimer($timerOutConnectivity);
-
-                                                        // Update the cache with the connectivity results
-                                                        echo "=========+> SET ACTIVE DOMAIN : " . $data['infos']['domain'] . PHP_EOL;
-
-                                                        $_CACHE[$data['infos']['domain']]['active'] = true;
-
-
-                                                        if (!isset($_TORESEND[$data['infos']['domain']]))
-                                                            $_TORESEND[$data['infos']['domain']] = [];
-
-                                                        $_TORESEND[$data['infos']['domain']][] = [
-                                                            'deferred' => $data['infos']['deferred'],
-                                                            'client' => $data['infos']['client'],
-                                                            'queries' => $data['infos']['queries'],
-                                                            'server' => $data['infos']['server'],
-                                                            'domainAsked' => $data['infos']['domainAsked'],
-                                                            'domain' => $data['infos']['domain']
-                                                        ];
-
-                                                        $this->loop->addTimer(0.2, (fn() => $this->retryResend()));
-                                                        // add Periodic Check of IPs
-                                                        $_CACHE[$data['infos']['domain']]['timerConnectivity'] = ['id' => uniqid() . rand(1, 10000)];
-                                                        $_CACHE[$data['infos']['domain']]['timerConnectivity']['timer'] = $this->loop->addPeriodicTimer(5, fn() => $this->testIpConnectivity($data['infos']['domain'], $_CACHE[$data['infos']['domain']]['timerConnectivity']['id'],null));
+                                                                $this->loop->addTimer(0.2, (fn() => $this->retryResend()));
+                                                                // add Periodic Check of IPs
+                                                                $_CACHE[$data['infos']['domain']]['timerConnectivity'] = ['id' => uniqid() . rand(1, 10000)];
+                                                                $_CACHE[$data['infos']['domain']]['timerConnectivity']['timer'] = $this->loop->addPeriodicTimer(5, fn() => $this->testIpConnectivity($data['infos']['domain'], $_CACHE[$data['infos']['domain']]['timerConnectivity']['id'], null));
 //
 
-                                                    })
-                                                    ->catch(function (Exception $e) use (&$_TORESOLVE,$data, $domain) {
+                                                            })
+                                                        ->catch(function (Exception $e) use (&$_TORESOLVE, $data, $domain) {
 //                                                        echo "Error testing IP connectivity for domain: " . $domain . " - " . $e->getMessage() . PHP_EOL;
 //                                                        // Reject the deferred with the error
 //                                                        $_TORESOLVE[$domain] = $data ;
@@ -854,35 +851,34 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 //                                                            $_TORESOLVE[$domain]['infos']['deferred']->reject($e);
 //                                                        }
 //                                                        unset($_TORESOLVE[$domain]) ;
-                                                            })
-                                                ;
+                                                        });
 
 
+                                                }
 
-                                            }
-
-                                        })->otherwise(function (Exception $e) {
-                                            echo 'Error inspecting task: ' . $e->getMessage() . PHP_EOL;
-                                        });
+                                            })->otherwise(function (Exception $e) {
+                                                echo 'Error inspecting task: ' . $e->getMessage() . PHP_EOL;
+                                            });
 
 
-                                    }
+                                        }
 
-                                })->otherwise(function (Exception $e) {
-                                    echo 'Error listing tasks: ' . $e->getMessage() . PHP_EOL;
-                                });
+                                    })->otherwise(function (Exception $e) {
+                                        echo 'Error listing tasks: ' . $e->getMessage() . PHP_EOL;
+                                    });
+                                }
+
                             }
+                        }, function (Exception $e) {
+                            echo 'Error: ' . $e->getMessage() . PHP_EOL;
+                        });
 
-                        }
-                    }, function (Exception $e) {
-                        echo 'Error: ' . $e->getMessage() . PHP_EOL;
-                    });
+                        unset($_TORESOLVE[$domain]);
 
-                    unset($_TORESOLVE[$domain]);
-
+                    }
                 }
 
-              ) ;
+                );
 
 
             }
