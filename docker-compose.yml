@@ -1,6 +1,7 @@
 # docker run -it --rm --name customdns -p 172.17.0.1:53:53/udp davidnurdin/customdns
 volumes:
   socketShare:
+  statesDns:
 #  socketShare2:
 
 networks:
@@ -92,6 +93,7 @@ services:
             source: /var/run/docker.sock
             target: /var/run/docker.sock
           - socketShare:/var/run/dns-helper
+          - statesDns:/app/states
           # only in dev !
           # - ./start.php:/app/start.php
         networks:
@@ -110,6 +112,7 @@ services:
           source: /var/run/docker.sock
           target: /var/run/docker.sock
         - socketShare:/var/run/dns-helper
+        - statesDns:/app/states
       networks:
         - host
       deploy:
