@@ -15,7 +15,7 @@ if (!isset($argv[5]))
 $GLOBALS['clearTimeoutSec'] = $argv[3]; // 60 * 5 ;
 
 $GLOBALS['instance'] = $argv[4];
-$GLOBALS['kill1After'] = 60 * 6;
+$GLOBALS['kill1After'] = 10; //60 * 6;
 $GLOBALS['kill2After'] = 60 * 8;
 $GLOBALS['kill3After'] = 60 * 10;
 $GLOBALS['DNS-HELPER-NAME'] = $argv[5]; // 'dns-helper' ; WIP todo
@@ -267,8 +267,46 @@ class FactoryExtended extends Factory
 class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 {
 
+    public function saveServerState()
+    {
+        global $_CACHE, $_TORESOLVE, $_TORESEND;
+
+        // Save the current state of the server
+        $state = [
+            'cache' => $_CACHE,
+            'toResolve' => $_TORESOLVE,
+            'toSend' => $_TORESEND,
+            'lastEmpty' => $GLOBALS['lastEmpty'] ?? time(),
+        ];
+
+        file_put_contents('server_state_' . $GLOBALS['instance'] . '.json', json_encode($state, JSON_PRETTY_PRINT));
+        echo "Server state saved." . PHP_EOL;
+
+    }
+
+    public function loadServerState()
+    {
+        global $_CACHE, $_TORESOLVE, $_TORESEND;
+        // Load the server state from a file
+        if (file_exists('server_state_' . $GLOBALS['instance'] . '.json')) {
+            $state = json_decode(file_get_contents('server_state_' . $GLOBALS['instance'] . '.json'), true);
+            if ($state) {
+                $_CACHE = $state['cache'] ?? [];
+                $_TORESOLVE = $state['toResolve'] ?? [];
+                $_TORESEND = $state['toSend'] ?? [];
+                $GLOBALS['lastEmpty'] = $state['lastEmpty'] ?? time();
+                echo "Server state loaded." . PHP_EOL;
+            } else {
+                echo "Failed to decode server state." . PHP_EOL;
+            }
+        } else {
+            echo "No server state file found." . PHP_EOL;
+        }
+    }
     public function __construct(private ResolverInterface $resolver, string $ip = '0.0.0.0', int $port = 53, ?\React\EventLoop\LoopInterface $loop = null)
     {
+        $this->loadServerState();
+
         if (isset($_SERVER['argv'][1]))
             $ip = $_SERVER['argv'][1];
 
@@ -300,6 +338,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         $this->loop->addTimer($GLOBALS['kill' . $GLOBALS['instance'] . 'After'], function () {
             echo "Killing process after " . $GLOBALS['kill' . $GLOBALS['instance'] . 'After'] . " seconds." . PHP_EOL;
+            $this->saveServerState();
             exit(0);
         });
 
