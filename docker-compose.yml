@@ -87,7 +87,7 @@ services:
 #        mode: global
 
     customdns:
-        image: davidnurdin/customdns:1.0.0
+        image: davidnurdin/customdns:1.0.1
         volumes:
           - type: bind
             source: /var/run/docker.sock
@@ -104,9 +104,26 @@ services:
             condition: any
 
     customdns2:
-      image: davidnurdin/customdns:1.0.0
+      image: davidnurdin/customdns:1.0.1
       # Fallback
-      command: [ "start.php","172.17.0.1","53","300","2","dns_dns-helper" ] # port 53 , cache 300s, #instance N2
+      command: [ "start.php","172.17.0.1","53","3600","2","dns_dns-helper" ] # port 53 , cache 300s, #instance N2
+      volumes:
+        - type: bind
+          source: /var/run/docker.sock
+          target: /var/run/docker.sock
+        - socketShare:/var/run/dns-helper
+        - statesDns:/app/states
+      networks:
+        - host
+      deploy:
+        mode: global  # un container par host
+        restart_policy:
+          condition: any
+
+    customdns3:
+      image: davidnurdin/customdns:1.0.1
+      # Fallback
+      command: [ "start.php","172.17.0.1","53","3600","3","dns_dns-helper" ] # port 53 , cache 300s, #instance N2
       volumes:
         - type: bind
           source: /var/run/docker.sock

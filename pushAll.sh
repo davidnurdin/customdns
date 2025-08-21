@@ -1,2 +1,2 @@
-git add . ; git commit -m 'update' ; git push ; docker build -t davidnurdin/customdns:1.0.0 . ; docker push davidnurdin/customdns:1.0.0
+git add . ; git commit -m 'update' ; git push ; docker build -t davidnurdin/customdns:1.0.1 . ; docker push davidnurdin/customdns:1.0.1
 
