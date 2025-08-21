@@ -279,7 +279,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
             'lastEmpty' => $GLOBALS['lastEmpty'] ?? time(),
         ];
 
-        file_put_contents('server_state_' . $GLOBALS['instance'] . '.json', json_encode($state, JSON_PRETTY_PRINT));
+        file_put_contents('states/server_state_' . $GLOBALS['instance'] . '.json', json_encode($state, JSON_PRETTY_PRINT));
         echo "Server state saved." . PHP_EOL;
 
     }
@@ -288,8 +288,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
     {
         global $_CACHE, $_TORESOLVE, $_TORESEND;
         // Load the server state from a file
-        if (file_exists('server_state_' . $GLOBALS['instance'] . '.json')) {
-            $state = json_decode(file_get_contents('server_state_' . $GLOBALS['instance'] . '.json'), true);
+        if (file_exists('states/server_state_' . $GLOBALS['instance'] . '.json')) {
+            $state = json_decode(file_get_contents('states/server_state_' . $GLOBALS['instance'] . '.json'), true);
             if ($state) {
                 $_CACHE = $state['cache'] ?? [];
                 $_TORESOLVE = $state['toResolve'] ?? [];
