@@ -186,6 +186,23 @@ class myResolver implements ResolverInterface
                             }
 
                         }
+                        else
+                        {
+                            if (!isset($_TORESEND[$domain]))
+                                $_TORESEND[$domain] = [];
+
+                            $_TORESEND[$domain][] = [
+                                'deferred' => $deferred,
+                                'client' => $client,
+                                'queries' => $queries,
+                                'server' => $server,
+                                'domainAsked' => $domainAsked,
+                                'domain' => $domain
+                            ];
+
+                            $this->loop->addTimer(0.2, (fn() => $this->server->retryResend()));
+                            return $deferred->promise();
+                        }
 
 
                     }
@@ -203,6 +220,8 @@ class myResolver implements ResolverInterface
                         'domainAsked' => $domainAsked,
                         'domain' => $domain
                     ];
+
+                    $this->loop->addTimer(0.2, (fn() => $this->server->retryResend()));
                 }
 
             } else {
