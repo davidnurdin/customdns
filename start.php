@@ -367,7 +367,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
     }
     public function __construct(private ResolverInterface $resolver, string $ip = '0.0.0.0', int $port = 53, ?\React\EventLoop\LoopInterface $loop = null)
     {
-        $this->loadServerState();
+        // $this->loadServerState();
 
         if (isset($_SERVER['argv'][1]))
             $ip = $_SERVER['argv'][1];
@@ -400,7 +400,7 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
         $this->loop->addTimer($GLOBALS['kill' . $GLOBALS['instance'] . 'After'], function () {
             echo "Killing process after " . $GLOBALS['kill' . $GLOBALS['instance'] . 'After'] . " seconds." . PHP_EOL;
-            $this->saveServerState();
+            // $this->saveServerState();
             exit(0);
         });
 
