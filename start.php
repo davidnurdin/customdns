@@ -166,15 +166,12 @@ class myResolver implements ResolverInterface
                                     $realIp = $_CACHE[$domain]['ipNat'][$client];
 
                                     // If the domain is active, we can send the response
-                                    $this->getAnswerAsync($queries, $originalClient, $deferred)
-                                        ->then(function (array $answers) use ($data,$originalClient) {
+                                    return $this->getAnswerAsync($queries, $originalClient, $deferred)
+                                        ->then(function (array $answers) use ($originalClient) {
                                             // Send the response to the client
-                                            if ($data['client']) {
-                                                echo "RE (new container) Sending response to " . $originalClient . PHP_EOL;
-                                            }
+                                            var_export($answers);
+                                            echo "RE (new container) Sending response to " . $originalClient . PHP_EOL;
                                         });
-
-                                    return $deferred->promise();
 
                                     /*
                                     // send only IP on same network of the client
