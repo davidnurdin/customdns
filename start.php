@@ -155,7 +155,7 @@ class myResolver implements ResolverInterface
                             ];
 
                             $that = $this ;
-                            $this->server->getRequesterAsync($domain, $data)->then(function ($infos) use (&$_CACHE, $domain, $data, $originalClient,$deferred,$client,$ip,$domainAsked,$that) {
+                            $this->server->getRequesterAsync($domain, $data)->then(function ($infos) use (&$_CACHE, $domain, $data, $originalClient,$deferred,$client,$ip,$domainAsked,$that,$queries) {
                                 if ($infos) {
                                     [$resolverClientContainerId, $ipAsker] = $infos;
                                     echo "=======2||||||||||||||||||||||||||||========== " . $ipAsker . " on the container : " . $resolverClientContainerId . " has ask for service : " . $domain . PHP_EOL;
@@ -165,6 +165,18 @@ class myResolver implements ResolverInterface
                                     // bug 22/08/2025
                                     $realIp = $_CACHE[$domain]['ipNat'][$client];
 
+                                    // If the domain is active, we can send the response
+                                    $this->getAnswerAsync($queries, $originalClient, $deferred)
+                                        ->then(function (array $answers) use ($data,$originalClient) {
+                                            // Send the response to the client
+                                            if ($data['client']) {
+                                                echo "RE (new container) Sending response to " . $originalClient . PHP_EOL;
+                                            }
+                                        });
+
+                                    return $deferred->promise();
+
+                                    /*
                                     // send only IP on same network of the client
                                     if ($that->isSameRange($ip['ip'], $realIp, $_CACHE[$domain]['networks'] ?? [])) {
                                         if ($ip['canBeJoin']) {
@@ -179,6 +191,8 @@ class myResolver implements ResolverInterface
                                     }
 
                                     $deferred->resolve($answers);
+                                    */
+
                                     // end bug 22/08/2025
                                 }
 
