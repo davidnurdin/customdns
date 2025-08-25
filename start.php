@@ -147,6 +147,8 @@ class myResolver implements ResolverInterface
                         // 19/08/2025 bug liste qui se vide
                         if (!isset($_CACHE[$domain]['ipNat'][$client])) {
 
+                            echo $originalClient . " NOT IN CACHE IPNAT !!! " . PHP_EOL ;
+
                             $data = [
                                 'infos' => [
                                     'client' => $originalClient,
@@ -201,11 +203,17 @@ class myResolver implements ResolverInterface
 
                         // get the real ip
                         if (isset($_CACHE[$domain]['ipNat'][$client])) {
+
+                            echo $client . " !!!! IS IN CACHE IPNAT !!! " . PHP_EOL ;
+
                             $realIp = $_CACHE[$domain]['ipNat'][$client];
+
+                            echo "REAL IP : " . $realIp . " for client : " . $client . PHP_EOL;
 
                             // send only IP on same network of the client
                             if ($this->isSameRange($ip['ip'], $realIp, $_CACHE[$domain]['networks'] ?? [])) {
                                 if ($ip['canBeJoin']) {
+                                    echo "ADD IP : " . $ip['ip'] . " for domain : " . $domainAsked . " with client : " . $client . "/" . $realIp . PHP_EOL;
                                     $answers[] = (new ResourceRecord())
                                         ->setQuestion(false)
                                         ->setTtl(($GLOBALS['clearTimeoutSec'] - (time() - $GLOBALS['lastEmpty'])) + 1)
@@ -214,6 +222,10 @@ class myResolver implements ResolverInterface
                                         ->setRdata($ip['ip']);
                                 }
 
+                            }
+                            else
+                            {
+                                echo "IP " . $ip['ip'] . " is not in the same range as " . $realIp . " for domain " . $domainAsked . PHP_EOL;
                             }
 
                         }
