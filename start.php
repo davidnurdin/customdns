@@ -249,6 +249,8 @@ class myResolver implements ResolverInterface
 
 
                     }
+
+                    shuffle($answers);
                     $deferred->resolve($answers);
                 } else {
                     // Si le domaine est dans le cache mais pas actif, on retentera plus tard..
