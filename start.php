@@ -154,12 +154,32 @@ class myResolver implements ResolverInterface
                                 ]
                             ];
 
-                            $this->server->getRequesterAsync($domain, $data)->then(function ($infos) use (&$_CACHE, $domain, $data, $originalClient) {
+                            $that = $this ;
+                            $this->server->getRequesterAsync($domain, $data)->then(function ($infos) use (&$_CACHE, $domain, $data, $originalClient,$deferred,$client,$ip,$domainAsked,$that) {
                                 if ($infos) {
                                     [$resolverClientContainerId, $ipAsker] = $infos;
                                     echo "=======2||||||||||||||||||||||||||||========== " . $ipAsker . " on the container : " . $resolverClientContainerId . " has ask for service : " . $domain . PHP_EOL;
                                     $ipClient = explode(':', $data['infos']['client'])[0] ?? null; // get the client IP without port
                                     $_CACHE[$domain]['ipNat'][$ipClient] = $ipAsker; // store the IP of the container on the same network
+
+                                    // bug 22/08/2025
+                                    $realIp = $_CACHE[$domain]['ipNat'][$client];
+
+                                    // send only IP on same network of the client
+                                    if ($that->isSameRange($ip['ip'], $realIp, $_CACHE[$domain]['networks'] ?? [])) {
+                                        if ($ip['canBeJoin']) {
+                                            $answers[] = (new ResourceRecord())
+                                                ->setQuestion(false)
+                                                ->setTtl(($GLOBALS['clearTimeoutSec'] - (time() - $GLOBALS['lastEmpty'])) + 1)
+                                                ->setType(RecordTypeEnum::TYPE_A)
+                                                ->setName($domainAsked . '.')
+                                                ->setRdata($ip['ip']);
+                                        }
+
+                                    }
+
+                                    $deferred->resolve($answers);
+                                    // end bug 22/08/2025
                                 }
 
                             });
