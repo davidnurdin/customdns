@@ -390,6 +390,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
         $_TORESEND = [];
 
 
+        $GLOBALS['lastEmpty'] = time();
+
         $this->resolver->server = $this;
 
         $this->loop->addPeriodicTimer(1, fn() => $this->retryResend());
@@ -411,6 +413,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
     public function emptyCache()
     {
         // semble avoir un bug si on vide le cache ..
+        $GLOBALS['lastEmpty'] = time();
+        echo "Cache clear at " . date('Y-m-d H:i:s') . PHP_EOL;
         return; // TODO : voir
 
         global $_CACHE;
