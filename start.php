@@ -410,7 +410,8 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
     public function emptyCache()
     {
-        //   return; // TODO : voir
+        // semble avoir un bug si on vide le cache ..
+        return; // TODO : voir
 
         global $_CACHE;
         // Empty the cache every 20 seconds
@@ -703,6 +704,15 @@ class ServerExtended extends \CatFerq\ReactPHPDNS\Server
 
             $result = \React\Promise\all($promises)->then(function ($results) use ($domain, &$_CACHE) {
                 // TODO : voir si y'a pas des timer en concurrence ?
+                if (count($results) == 0)
+                {
+                    echo "BUUG§§!!!!" ;
+                    // bug 25/08/2025
+                    unset ($_CACHE[$domain]);
+                    return $results;
+                    // end bug
+
+                }
                 echo "WRITE ips TO domain : " . $domain . " count ( " . count($results) . " \n";
                 var_export($results);
 
